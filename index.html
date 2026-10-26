@@ -1,0 +1,1115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Compémon Exam 2</title>
+<style>
+:root{--ink:#111;--paper:#fbfaf5;--soft:#ecebe4;--mid:#6b6b6b;--r:255px 14px 225px 14px/14px 225px 14px 255px}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink)}
+body{font-family:"Chalkboard SE","Comic Sans MS","Comic Neue","Patrick Hand",cursive;min-height:100vh;
+  background-image:linear-gradient(#0000 31px,#0000000d 32px);background-size:100% 32px}
+#app{max-width:900px;margin:0 auto;padding:16px 16px 40px}
+h1,h2,h3{margin:.2em 0 .4em;line-height:1.15}
+h1{font-size:clamp(30px,6vw,46px);letter-spacing:1px}
+p{line-height:1.45}
+.muted{color:var(--mid)}
+.small{font-size:14px}
+.btn{font:inherit;font-size:17px;background:#fff;color:var(--ink);border:2.5px solid var(--ink);border-radius:var(--r);
+  padding:10px 16px;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .08s,box-shadow .08s;text-align:left}
+.btn:hover:not(:disabled){transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.btn:active:not(:disabled){transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.dark{background:var(--ink);color:#fff}
+.btn.center{text-align:center}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn.right:disabled,.btn.wrong:disabled{opacity:1}
+.btn.right{background:var(--ink);color:#fff}
+.btn.wrong{background:repeating-linear-gradient(45deg,#fff 0 6px,#ccc 6px 9px);text-decoration:line-through}
+.btn.gone{visibility:hidden}
+.box{border:2.5px solid var(--ink);border-radius:var(--r);background:#fff;padding:14px 16px;box-shadow:4px 4px 0 var(--ink)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:600px){.grid2{grid-template-columns:1fr}}
+.emo{filter:grayscale(1) contrast(1.3)}
+.tag{display:inline-block;border:2px solid var(--ink);border-radius:999px;padding:1px 10px;font-size:13px;background:#fff}
+.tag.dark{background:var(--ink);color:#fff}
+input[type=text],textarea{font:inherit;font-size:16px;border:2.5px solid var(--ink);border-radius:10px 4px 12px 4px;padding:8px 10px;background:#fff;color:var(--ink);width:100%}
+textarea{min-height:110px;resize:vertical}
+[data-s] .card{width:200px}
+.card{position:relative;border:2.5px solid var(--ink);border-radius:12px 6px 14px 5px;background:#fff;padding:6px 8px 8px;width:150px;box-shadow:3px 3px 0 var(--ink);cursor:default}
+.card.sel{outline:3px dashed var(--ink);outline-offset:3px}
+.card.click{cursor:pointer}
+.card.fainted{opacity:.5}
+.card .nm{font-size:14px;font-weight:bold;display:flex;justify-content:space-between;gap:4px}
+.card svg{display:block;margin:0 auto}
+.card .fl{font-size:12px;color:var(--mid);min-height:30px}
+.hp{height:10px;border:2px solid var(--ink);border-radius:6px;background:#fff;overflow:hidden}
+.hp>i{display:block;height:100%;background:var(--ink);transition:width .5s}
+.hp.big{height:14px}
+.hptxt{font-size:12px;text-align:right}
+.arena{position:relative;border:2.5px solid var(--ink);border-radius:var(--r);background:#fff;min-height:270px;padding:12px;box-shadow:4px 4px 0 var(--ink);overflow:hidden}
+.arena .foe{position:absolute;right:16px;top:8px;text-align:right}
+.arena .me{position:absolute;left:16px;bottom:6px}
+.plate{background:#fff;border:2px solid var(--ink);border-radius:8px 3px 10px 3px;padding:4px 8px;width:200px;font-size:14px}
+.arena .foe .plate{position:absolute;right:150px;top:6px}
+.arena .me .plate{position:absolute;left:150px;bottom:20px}
+.ground{position:absolute;border:2px solid var(--ink);border-radius:50%;height:22px;background:repeating-linear-gradient(90deg,#fff 0 4px,#e6e6e6 4px 6px)}
+.mon{overflow:visible}
+.mon.flip{transform:scaleX(-1)}
+.shake{animation:shake .45s}
+.lunge{animation:lunge .4s}
+.lungeL{animation:lungeL .4s}
+.faint{animation:faint .7s forwards}
+@keyframes shake{20%{transform:translateX(-8px) rotate(-3deg)}40%{transform:translateX(8px) rotate(3deg)}60%{transform:translateX(-6px)}80%{transform:translateX(5px)}}
+@keyframes lunge{50%{transform:translate(40px,-20px)}}
+@keyframes lungeL{50%{transform:translate(-40px,20px)}}
+@keyframes faint{to{transform:translateY(30px) rotate(12deg);opacity:.25}}
+.pop{position:absolute;font-size:26px;font-weight:bold;pointer-events:none;animation:pop 1.1s forwards;background:#fff;border:2px solid var(--ink);border-radius:8px;padding:0 6px}
+@keyframes pop{0%{opacity:0;transform:translateY(0) scale(.6)}15%{opacity:1;transform:translateY(-6px) scale(1.15)}100%{opacity:0;transform:translateY(-50px)}}
+.qbox{margin-top:16px}
+.q{font-size:19px;margin:6px 0 12px;line-height:1.4}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:640px){.opts{grid-template-columns:1fr}.arena{min-height:250px}.plate{width:150px}.arena .foe .plate{right:112px}.arena .me .plate{left:112px}}
+.opts .btn .k{display:inline-block;min-width:22px;font-weight:bold}
+.fb{margin-top:12px;padding:10px 12px;border:2px dashed var(--ink);border-radius:10px;background:#fff}
+table.data{border-collapse:collapse;margin:6px 0 10px;background:#fff;font-size:15px}
+table.data td,table.data th{border:2px solid var(--ink);padding:4px 10px;text-align:center}
+table.data th{background:var(--ink);color:#fff;font-weight:normal}
+.teambar{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:stretch}
+.teambar .card{width:132px;padding:4px 6px 6px}
+.teambar .card .fl{display:none}
+.bag{display:flex;gap:8px;flex-wrap:wrap}
+.item{border:2px solid var(--ink);border-radius:10px 4px 10px 4px;background:#fff;padding:6px 10px;font:inherit;font-size:15px;cursor:pointer;box-shadow:2px 2px 0 var(--ink);color:var(--ink)}
+.item:disabled{opacity:.4;cursor:not-allowed}
+.item small{display:block;font-size:12px;color:var(--mid);max-width:190px;text-align:left}
+.map{display:flex;align-items:center;gap:0;margin:18px 0;flex-wrap:wrap}
+.node{width:62px;height:62px;border:2.5px solid var(--ink);border-radius:50% 45% 52% 48%;display:grid;place-items:center;background:#fff;font-size:24px}
+.node.done{background:var(--ink);color:#fff}
+.node.cur{outline:3px dashed var(--ink);outline-offset:4px}
+.link{width:40px;border-top:3px dashed var(--ink)}
+.typeicon{font-family:"Segoe UI Symbol","Apple Symbols",sans-serif}
+.share{white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace;font-size:13px;background:#fff;border:2px solid var(--ink);border-radius:8px;padding:10px;max-height:260px;overflow:auto}
+.banner{border:3px double var(--ink);padding:10px 14px;border-radius:12px;background:#fff;margin:10px 0}
+.rub li{margin:3px 0}
+.chartwrap{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}
+.hof .entry{border-top:2px dashed var(--ink);padding:10px 0}
+.minis{display:flex;gap:4px;align-items:flex-end}
+.minis div{text-align:center;font-size:11px}
+a{color:var(--ink)}
+.typechart{display:flex;gap:6px;flex-wrap:wrap}
+.hint{font-size:13px;color:var(--mid);margin-top:6px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="wob"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="2.6"/></filter>
+</svg>
+<div id="app"></div>
+<script>
+"use strict";
+/* ============================================================
+   COMPÉMON — Compensation Exam 2 (Chapters 7–11)
+   Paste your hosted link here once you host the file (e.g. Netlify Drop).
+   It goes into the share text so friends can tap it.
+   ============================================================ */
+const SHARE_URL = "https://computergenx.github.io/compemon/";
+
+/* ---------- storage (safe) ---------- */
+const KEY = "compemon.v1.";
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(KEY + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(KEY + k, JSON.stringify(v)); } catch (e) {} }
+};
+
+/* ---------- seeded RNG ---------- */
+function xmur(str) { let h = 1779033703 ^ str.length; for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = h << 13 | h >>> 19; } h = Math.imul(h ^ h >>> 16, 2246822507); h = Math.imul(h ^ h >>> 13, 3266489909); return (h ^ h >>> 16) >>> 0; }
+function rngFor(seed, stream) { let a = xmur(seed + "|" + stream); return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function shuffle(arr, r) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function newSeed() { const c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let s = ""; for (let i = 0; i < 6; i++) s += c[Math.floor(Math.random() * c.length)]; return s; }
+
+/* ---------- chapter types ---------- */
+const TYPES = {
+  7: { icon: "◆", name: "Market", ch: "Ch 7 External Competitiveness" },
+  8: { icon: "▲", name: "Survey", ch: "Ch 8 Surveys & Structures" },
+  9: { icon: "●", name: "Motive", ch: "Ch 9 Pay for Performance" },
+  10: { icon: "■", name: "Incentive", ch: "Ch 10 P4P Plans" },
+  11: { icon: "★", name: "Appraisal", ch: "Ch 11 Performance Appraisal" }
+};
+
+/* ---------- data tables from the slides ---------- */
+const T_MIX = [["Employer", "Base", "Variable", "Benefits", "Total"], ["A", "$65,000", "$5,000", "$20,000", "$90,000"], ["B", "$55,000", "$20,000", "$15,000", "$90,000"]];
+const T_GRID10 = [["Rating", "CR 80–90%", "CR 91–110%", "CR 111–120%"], ["Exceeds", "7%", "5%", "3%"], ["Meets", "4%", "3%", "2%"], ["Below", "2%", "0%", "0%"]];
+const T_GRID11 = [["Rating", "CR < 0.90", "CR 0.90–1.10", "CR > 1.10"], ["Exceeds", "6%", "5%", "4%"], ["Meets", "4%", "3%", "2%"], ["Below", "0%", "0%", "0%"]];
+const T_SURVEY = [["Short-term plan", "% of orgs"], ["Annual incentive plan", "89%"], ["Spot cash awards", "50%"], ["Discretionary bonus", "34%"], ["Retention bonus", "32%"], ["Project bonus", "16%"], ["Profit sharing", "14%"], ["Team incentives", "12%"], ["Gainsharing", "4%"]];
+const T_REG = [["Market pay line (regression on benchmark jobs)"], ["Market pay = $20,000 + $100 × job-evaluation points"], ["R² = 0.92"]];
+const T_RANGE = [["Grade 2", "Pay"], ["Maximum", "$65,875"], ["Midpoint", "$54,986"], ["Minimum", "$43,917"]];
+
+/* ---------- question bank ----------
+   M(chapter, difficulty 1-3, question, [correct, wrong...], explanation, table?)
+   T(chapter, difficulty, statement, true/false, explanation)            */
+const BANK = [];
+function M(c, d, q, a, e, tbl) { BANK.push({ id: BANK.length, kind: "mc", c, d, q, a, e, tbl }); }
+function T(c, d, q, tf, e) { BANK.push({ id: BANK.length, kind: "tf", c, d, q, tf, e }); }
+
+/* Chapter 7 */
+M(7,1,"External competitiveness refers to:",["Pay relationships across organizations — how our pay compares with competitors","Pay relationships among jobs inside one organization","The share of pay that is variable","Legal compliance of pay practices"],"External = across organizations. Internal alignment is about jobs within one organization.");
+M(7,1,"Pay level is best defined as:",["The average pay an employer offers relative to competing employers","The combination of base pay, incentives, and benefits","The gap between the highest- and lowest-paid job","The legal minimum wage in the market"],"Pay level = average amount paid relative to competitors. The combination of forms is pay mix.");
+M(7,1,"Pay mix is:",["The combination of base pay, incentives, benefits, and other rewards","The average amount paid relative to competitors","The number of pay grades in a structure","Salary divided by range midpoint"],"Pay mix = the forms of pay. Two firms with the same total can have very different mixes.");
+M(7,1,"The two objectives of external competitiveness decisions are to:",["Control labor costs and attract & retain employees","Ensure internal equity and legal compliance","Maximize benefits and minimize turnover","Set merit budgets and appraise performance"],"Slide: Control labor costs (pay level × number of employees) and attract & retain employees.");
+M(7,2,"Using the table, which statement is TRUE?",["Total pay is equal, but B's mix may attract more risk-tolerant, performance-driven people","A has a higher pay level than B","B lags the market and A leads it","Because totals match, both will attract the same employees"],"Same $90,000 total, different mix. B puts more pay at risk ($20k variable), which sorts in performance-driven people.",T_MIX);
+M(7,2,"Marginal REVENUE of labor is:",["The revenue generated by the extra output of one more employee","The extra output produced by one more employee","Total revenue divided by headcount","The wage needed to attract one more employee"],"Marginal product = extra output. Marginal revenue = the revenue from that extra output.");
+M(7,2,"Marginal PRODUCT of labor is:",["The additional output from one more employee","The revenue from one more employee's output","The average output per employee","The cost of one more employee"],"Marginal product is output; marginal revenue converts it to dollars.");
+M(7,2,"An employer should keep adding employees as long as:",["Marginal revenue of the next hire is greater than that hire's cost","Marginal product is positive","Average pay is below the market","Turnover is above the industry average"],"Hire when MR of labor > employment cost.");
+M(7,2,"Efficiency wage theory says paying ABOVE market can:",["Attract stronger applicants, reduce turnover, and increase effort","Always lower total labor costs","Guarantee higher profit regardless of productivity","Remove the need for pay surveys"],"Efficiency wages: higher pay → better applicants, less turnover, more effort (a demand-side effect).");
+M(7,2,"Under sorting & signaling, a pay package heavy on incentives mainly:",["Signals the employer values performance and influences who joins or stays","Shows the product market is uncompetitive","Pushes wages below applicants' reservation wage","Means the firm uses broadbanding"],"The package sends a signal; applicants self-select (sort) based on it.");
+M(7,1,"A reservation wage is:",["The lowest wage an applicant will accept","The wage held back for top performers","The midpoint of a pay range","The legally required minimum wage"],"Supply side: each applicant's personal minimum acceptable wage.");
+M(7,2,"Human capital theory predicts that:",["Education, training, and experience raise productivity and therefore earnings","Pay depends only on product demand","Risky jobs must pay more","Higher pay always increases effort"],"Supply side: investments in human capital raise productivity and earnings.");
+M(7,2,"Compensating differentials explain why:",["Unpleasant or risky jobs must pay more to attract workers","High performers receive bonuses","Large firms pay more than small firms","Product competitors pay similar wages"],"Workers need extra pay to accept unpleasant or risky job attributes.");
+M(7,3,"Intense competition in a firm's PRODUCT market tends to:",["Limit its ability to pass higher labor costs on to customers","Let it lead the labor market freely","Raise applicants' reservation wages","Make pay surveys unnecessary"],"Product market sets what the firm can recover. Strong price competition caps labor costs.");
+M(7,2,"Which is an ORGANIZATION factor that shapes pay level?",["Industry, size, technology, and business strategy","Customer demand for the product","Applicants' reservation wages","The marginal product of labor"],"Organization factors: strategy, industry, size, technology, employee preferences.");
+M(7,3,"A grocery chain is hiring software engineers. Its relevant LABOR market is:",["Employers that compete for software engineers, even in other industries","Other grocery chains only","Every employer in its city, for every job","Firms that sell to the same customers"],"Labor competitors can differ from product competitors. Define by occupation, geography, and competitors for the same skills.");
+M(7,2,"The three things to consider when defining the relevant labor market are:",["Occupation, geography, and competitors","Pay level, pay mix, and benefits","Expectancy, instrumentality, and valence","Base, total cash, and total compensation"],"Slide 7: occupation, geography, competitors (product vs labor).");
+M(7,1,"Which pay-level policy sets pay ABOVE the market?",["Lead","Match","Lag","Broadband"],"Lead = above, match = near, lag = below market.");
+M(7,2,"The main risk of a LAG policy is:",["Hiring and retention may suffer","Higher costs that must earn a return","No advantage at all on pay","Legal noncompliance"],"Lag lowers current cash cost but can hurt attraction and retention.");
+M(7,2,"The main risk of a LEAD policy is:",["Higher costs that must be recovered through productivity, quality, or another return","Difficulty attracting applicants","Little advantage on pay alone","Lower applicant quality"],"Lead supports attraction and retention, but higher costs require a return.");
+M(7,2,"The main risk of a MATCH policy is:",["Little competitive advantage on pay alone","Very high labor costs","Severe hiring problems","Illegal pay discrimination"],"Match gives comparable costs and hiring access but no pay edge.");
+M(7,3,"A firm matches the market on base pay but leads on incentives. This shows that:",["Pay-level policy can differ by form of pay (and by job or unit)","The firm is lagging overall","It violates external competitiveness","Pay mix does not matter"],"Slide 8: a firm might lead on incentives while matching base pay.");
+M(7,2,"A firm emphasizes flexible schedules, generous leave, and wellness benefits. Its pay mix stresses:",["Work–life balance","Performance driven","Security","Shared choice"],"Pay mix options: performance driven, work-life balance, security, shared choice.");
+M(7,2,"Employees pick among reward options within limits. This pay-mix approach is:",["Shared choice","Security","Performance driven","Lag policy"],"Shared choice = employees select within limits.");
+M(7,3,"Stable base pay and predictable benefits with little variable pay describes which pay mix?",["Security","Performance driven","Shared choice","Lead"],"Security = stable pay and predictable benefits.");
+T(7,1,"Two employers can offer the same total compensation and still attract different employees because of pay mix.",true,"Yes — the $90,000 A vs B example.");
+T(7,2,"Product-market competitors and labor-market competitors are always the same organizations.",false,"They can differ — e.g., tech firms compete with a grocery chain for software engineers.");
+T(7,1,"A lag policy lowers current cash costs but may hurt hiring and retention.",true,"That is the lag trade-off.");
+T(7,2,"Paying above market always guarantees higher productivity.",false,"Higher pay needs a return; it is not guaranteed.");
+T(7,2,"A company can use different pay-level policies for different occupations or forms of pay.",true,"Slide 8: policies can vary by occupation, unit, or form of pay.");
+T(7,2,"Efficiency wage theory is a supply-side explanation of pay.",false,"Efficiency wages and sorting/signaling are DEMAND-side. Reservation wage and human capital are supply-side.");
+
+/* Chapter 8 */
+M(8,1,"Which is NOT a main purpose of a pay survey?",["Rating individual employees' performance","Setting the pay level","Evaluating the pay mix","Building or validating the pay structure"],"Survey purposes: pay level, pay mix, structure, specific problems, competitors' labor costs.");
+M(8,1,"Benchmark jobs are:",["Jobs with recognizable, comparable content that anchor market comparisons","The highest-paid jobs in the company","Jobs unique to one employer","Jobs filled by the newest employees"],"Benchmarks are stable, well-known jobs you can match across firms.");
+M(8,2,"When matching your jobs to survey jobs you should:",["Compare actual job content, not just titles","Match by job title only","Only use jobs that exist in every industry","Pick whichever survey job pays the most"],"Titles alone are not enough — compare content and use judgment.");
+M(8,2,"Total CASH compensation includes:",["Base pay plus bonuses and other cash incentives","Base pay only","Base pay, incentives, and benefits","Benefits only"],"Base → total cash (adds bonuses) → total compensation (adds benefits).");
+M(8,2,"Which pay measure is broadest but makes comparisons most complex?",["Total compensation","Base pay","Total cash","Merit increase"],"Total compensation adds benefits and other rewards.");
+M(8,2,"Base pay data is best for:",["Comparing the market value of similar work","Seeing the effect of bonuses","Comparing benefit costs","Measuring individual performance"],"Slide 3: base pay is best for comparing market value of similar work.");
+M(8,2,"As a job becomes more specialized or senior, its relevant geographic market usually:",["Expands (regional, national, or global)","Shrinks to the local area","Stays exactly the same","Stops mattering"],"Senior/specialized talent is recruited from farther away.");
+M(8,2,"A 'fuzzy' market describes:",["New or hybrid jobs that do not map cleanly onto one occupation or industry","A market with unreliable survey vendors","A market where every employer pays the same","A market where pay is set by law"],"Fuzzy markets: hybrid skills that don't fit one comparison group.");
+M(8,3,"A MARKET PAY LINE is:",["A regression line linking internal job value (e.g., JE points) to market pay for benchmark jobs","The line after adjusting the market for a lead/lag policy","A line connecting range minimums","A line connecting the highest-paid employees"],"Market pay line = regression of market rates on job evaluation results. The policy line adjusts it.");
+M(8,3,"Using the regression, what is the predicted market pay for a 400-point job?",["$60,000","$40,000","$20,400","$80,000"],"$20,000 + $100 × 400 = $60,000.",T_REG);
+M(8,3,"Using the regression, the firm LEADS the market by 10%. What is the pay policy line value at 400 points?",["$66,000","$60,000","$70,000","$54,000"],"Market = $60,000. Lead 10% → $60,000 × 1.10 = $66,000.",T_REG);
+M(8,3,"Using the regression, the firm LAGS the market by 5%. Pay policy for a 300-point job is:",["$47,500","$50,000","$52,500","$45,000"],"Market = $20,000 + $30,000 = $50,000. Lag 5% → $47,500.",T_REG);
+M(8,3,"What does the R² of 0.92 in this regression tell you?",["Job evaluation points explain most of the variation in market pay","92% of jobs are paid above market","The firm pays 92% of the market","Only 8% of jobs are benchmarks"],"R² = share of variance in market pay explained by JE points. 0.92 = a strong fit.",T_REG);
+M(8,3,"The PAY POLICY LINE differs from the market pay line because it:",["Adjusts the market line to reflect the firm's lead, match, or lag policy","Uses only non-benchmark jobs","Shows the minimum of each pay range","Ignores market data"],"Policy line = market line + the firm's competitive policy.");
+M(8,2,"In a pay survey, the 50th percentile is:",["The median — half of the reported rates fall below it","The average of the highest and lowest rate","The most common rate","The top half's average"],"50th percentile = median. A 'match' policy often targets it.");
+M(8,1,"A pay GRADE groups:",["Different jobs treated as substantially equal for pay purposes","Employees by performance rating","Employees by seniority","Only identical jobs"],"Jobs in a grade share the same pay range.");
+M(8,1,"A pay RANGE sets:",["A minimum, midpoint, and maximum for jobs in a grade","One flat rate for each job","The market's 50th percentile","The size of each bonus"],"Ranges allow pay differences for experience and performance.");
+M(8,2,"Range spread is calculated as:",["(Maximum ÷ Minimum) − 1","Maximum − Minimum","Maximum ÷ Midpoint","(Maximum + Minimum) ÷ 2"],"Slide formula: (Max ÷ Min) − 1. (Max + Min) ÷ 2 is a midpoint.");
+M(8,3,"Using the Grade 2 range, the range spread is about:",["50%","22%","33%","150%"],"$65,875 ÷ $43,917 = 1.50 → 1.50 − 1 = 50%.",T_RANGE);
+M(8,2,"Pay ranges allow different pay within one grade mainly for:",["Experience and performance","Job title","Department name","Office location only"],"Slide: ranges recognize differences in experience and performance.");
+M(8,2,"Compared with traditional grades, BROADBANDING uses:",["Fewer, wider bands that support lateral and cross-functional moves","More grades with narrower ranges","Tighter midpoint controls","No managerial discretion"],"Broadbanding = fewer, wider bands; flexibility within guidelines.");
+M(8,3,"The main risk of broadbanding is:",["Inconsistency and favoritism from greater managerial discretion","Rigidity and limited flexibility","Too few lateral moves","Too many midpoint controls"],"Broad bands → discretion → risk of inconsistency/favoritism. Rigidity is the traditional grades' risk.");
+M(8,3,"The main risk of traditional grades and ranges is:",["Rigidity and limited flexibility","Inconsistency and favoritism","Too much managerial discretion","No promotion steps"],"Traditional: structured progression and controls, but rigid.");
+M(8,2,"Traditional grades and ranges fit best when the organization needs:",["Structured progression and built-in cost controls","Maximum lateral movement","Wide managerial discretion","No pay structure at all"],"'Flexibility within controls.'");
+M(8,2,"Using multiple survey sources helps you:",["Cross-check and validate the market picture","Avoid matching job content","Skip the relevant-market step","Guarantee a lead policy"],"Slide 3: use multiple sources to cross-check.");
+M(8,3,"A targeted survey to explain unusual turnover in one job family is an example of:",["Investigating a specific problem","Setting the overall pay level","Rating employee performance","Broadbanding"],"Surveys can investigate specific problems like turnover in particular jobs.");
+T(8,1,"Job titles alone are enough to match jobs in a pay survey.",false,"Compare job content, not titles.");
+T(8,2,"Range spread = (Maximum ÷ Minimum) − 1.",true,"That is the slide formula.");
+T(8,2,"Broadbanding usually uses more grades with narrower ranges than a traditional structure.",false,"Broadbanding = fewer, WIDER bands.");
+T(8,2,"A pay survey is the pay decision itself.",false,"'The survey is a means to a decision — not the decision itself.'");
+T(8,2,"For a lead policy, the pay policy line sits above the market pay line.",true,"Lead = policy line above the market line.");
+T(8,1,"Benchmark jobs should represent enough of the job hierarchy to help price the broader structure.",true,"Benchmarks should 'cover the structure.'");
+
+/* Chapter 9 */
+M(9,1,"Designing pay for performance should start with:",["Strategy, then the behaviors needed, then the rewards","The rewards, then the strategy","The market survey, then the strategy","The appraisal form"],"Slide: Strategy → Behaviors → Rewards.");
+M(9,1,"The three parts of expectancy theory are:",["Expectancy, instrumentality, and valence","Equity, reinforcement, and goals","Hygiene factors, motivators, and needs","Attraction, retention, and turnover"],"Motivation = E × I × V.");
+M(9,2,"'Will my PERFORMANCE actually lead to a reward?' is:",["Instrumentality","Expectancy","Valence","Equity"],"Instrumentality = performance → reward link.");
+M(9,2,"'Will my EFFORT improve my performance?' is:",["Expectancy","Instrumentality","Valence","Reinforcement"],"Expectancy = effort → performance link.");
+M(9,2,"An employee doesn't care about the gift card offered for hitting a goal. Which link fails?",["Valence","Expectancy","Instrumentality","Line of sight"],"Valence = how much the employee values the reward.");
+M(9,3,"Because motivation = E × I × V:",["If any one link is near zero, motivation collapses","The three links simply add together","Valence is the only link that matters","High instrumentality makes up for zero expectancy"],"Multiplicative: a zero anywhere makes the product zero.");
+M(9,2,"Herzberg's two-factor theory suggests that pay:",["Can cause dissatisfaction if inadequate, but more pay alone does not necessarily motivate","Is the strongest motivator in every case","Has no effect on satisfaction","Only satisfies self-actualization needs"],"Pay is a hygiene factor; achievement, growth, and the work itself motivate.");
+M(9,2,"In Maslow's hierarchy, base pay mainly helps:",["Meet basic needs","Reach self-actualization directly","Create esteem automatically","Replace the need for recognition"],"Once basic needs are met, rewards tied to higher needs may motivate.");
+M(9,1,"Maslow and Herzberg are examples of:",["Content theories (what employees value)","Process theories (how rewards motivate)","Agency theories","Labor market theories"],"Content = what people need/value. Process = how motivation works (expectancy, equity, etc.).");
+M(9,2,"Equity theory says employees:",["Compare their contributions and rewards with others'","Work hardest when rewards follow behavior closely","Need specific, challenging goals","Act as agents of the owners"],"Perceived unfairness changes behavior.");
+M(9,2,"Reinforcement theory says rewards work best when:",["They closely follow the behavior being encouraged","They are paid once a year","They are the same for everyone","They are kept secret"],"Timing matters — reward soon after the behavior.");
+M(9,2,"Goal-setting theory recommends:",["Specific, challenging goals with regular feedback","Vague goals so employees stay flexible","Easy goals everyone can hit","Goals without feedback"],"Specific + challenging + feedback directs effort.");
+M(9,3,"Agency theory says incentives can:",["Align employees' (agents') interests with owners' (principals') objectives","Make employees compare pay with coworkers","Reduce the need for performance measures","Guarantee intrinsic motivation"],"Principal–agent alignment, e.g., executive stock pay.");
+M(9,2,"SORTING effects of pay concern:",["Who joins, stays, and leaves the organization","How hard current employees work","The timing of rewards","The pay survey sample"],"Sorting = who works here.");
+M(9,2,"INCENTIVE effects of pay concern:",["How current employees change effort or behavior","Who applies to the organization","Which firms are in the survey","The pay range spread"],"Incentives = how people work once here.");
+M(9,3,"After a firm adds individual incentives, low performers quit and high performers apply. This is:",["A sorting effect","An incentive effect","A compensating differential","Central tendency"],"Workforce composition changed → sorting.");
+M(9,3,"Which applicants are most likely to prefer jobs with a lot of variable pay?",["Risk-tolerant applicants","Risk-averse applicants","Applicants seeking security","Applicants with high reservation wages only"],"Slide 8: risk-tolerant employees may prefer more variable pay.");
+M(9,2,"'Line of sight' means employees:",["Can see how their actions affect the measure and the reward","Sit close to their manager","Know coworkers' salaries","Can view the pay survey"],"Needed for incentive effects: meaningful measures, credible link, valued outcomes.");
+M(9,3,"Which is an UNINTENDED consequence of a poorly designed incentive?",["Gaming the metric and focusing narrowly on what is measured","Clear goals","Better line of sight","Higher valence"],"Watch for gaming, narrow focus, risk shifting, and damaged cooperation.");
+M(9,3,"PROCEDURAL justice in an incentive plan concerns:",["The fairness of how rewards are determined","The fairness of the amount received","The size of the merit budget","Whether the job is a benchmark"],"Distributive = amounts. Procedural = process.");
+M(9,3,"Pay for performance is LIKELY LESS effective when:",["Performance is hard to measure and outside employees' control","Measures are clear and current","Employees value the rewards","Line of sight is strong"],"Weak measures and low control break the E and I links.");
+M(9,3,"A company pays sales reps only on individual sales but hopes they will share leads. Kerr calls this:",["Rewarding A while hoping for B","Efficiency wages","Broadbanding","Calibration"],"Kerr: reward systems often pay for one behavior while hoping for another.");
+M(9,2,"Not all turnover is harmful because:",["What matters is which employees enter and exit","Turnover never affects costs","Pay never affects turnover","High performers never leave"],"Slide 8: the key is who enters and exits.");
+T(9,1,"According to Herzberg, more pay always produces more motivation.",false,"More pay does not always mean more motivation.");
+T(9,1,"Expectancy theory says motivation depends on expectancy, instrumentality, and valence together.",true,"E × I × V.");
+T(9,2,"Sorting effects change who works for the organization, not just how hard people work.",true,"Sorting = composition of the workforce.");
+T(9,2,"All turnover caused by pay for performance is harmful.",false,"Losing low performers can help.");
+T(9,1,"Reinforcement theory says rewards work best when they closely follow the behavior.",true,"Timing matters.");
+T(9,2,"Distributive justice is about the fairness of the process used to decide rewards.",false,"That is procedural justice. Distributive = fairness of the amounts.");
+
+/* Chapter 10 */
+M(10,1,"A MERIT INCREASE is:",["An annual increase to base pay based on a performance evaluation","A one-time cash award that does not change base pay","A share of company profits","Stock granted to all employees"],"Merit increases build into base pay, usually within a grade.");
+M(10,2,"A merit BONUS (lump sum) differs from a merit increase because it:",["Does not become part of base salary","Is always larger","Is based on seniority","Is paid only to executives"],"The choice is whether the reward becomes fixed pay.");
+M(10,1,"Compa-ratio equals:",["Current salary ÷ range midpoint","Range maximum ÷ range minimum","Midpoint ÷ market rate","Raise ÷ salary"],"CR = salary ÷ midpoint.");
+M(10,3,"Using the merit grid, an employee rated MEETS has a compa-ratio of 85%. What is the raise?",["4%","3%","2%","7%"],"85% falls in the 80–90% column; Meets → 4%.",T_GRID10);
+M(10,3,"Using the merit grid: rated EXCEEDS, salary $55,000, midpoint $50,000. What is the raise in dollars?",["$2,750","$3,850","$1,650","$5,500"],"CR = 55,000 ÷ 50,000 = 110% → 91–110% column → 5% × $55,000 = $2,750.",T_GRID10);
+M(10,3,"Why does the grid give LOWER raises to people with a high compa-ratio?",["They are already paid high in the range, so smaller raises control cost and keep pay near the range","They are always weaker performers","The law requires it","Their jobs are not benchmarks"],"Higher position in range → smaller % keeps pay in line and lets lower-paid strong performers catch up.",T_GRID10);
+M(10,2,"A MERIT increase vs a PROMOTION:",["Merit is within-grade growth; promotion moves to a higher role or grade","They are the same thing","Promotion never changes pay","Merit always moves you up a grade"],"Promotions often come with a larger salary change.");
+M(10,2,"A SPOT award is:",["A small, immediate award for a specific accomplishment","A permanent increase to base pay","A three-year stock grant","A share of plant-wide savings"],"Spot cash awards are used by ~50% of orgs in the survey.");
+M(10,2,"A plan pays $2 for every unit assembled. This is a:",["Piece-rate plan (units per period, constant rate)","Standard-hour (time-based) plan","Gainsharing plan","Merit pay plan"],"Standard set as units produced; constant pay per unit.");
+M(10,2,"A mechanic is paid for the standard 3 hours on a brake job even when finishing in 2. This is a:",["Time-based (standard hour) plan","Straight piece rate","Profit sharing plan","Spot award"],"Standard set as time allowed per unit.");
+M(10,2,"Main risks of INDIVIDUAL incentive plans:",["Narrow focus, gaming, and conflict among coworkers","Free riding","Weak line of sight","Too much cooperation"],"Slide 5: returns are strong; risks are narrow focus, gaming, conflict.");
+M(10,2,"The classic disadvantage of TEAM / group incentives is:",["Free riding and weak individual line of sight","Too much individual competition","Excess line of sight","No need for measurement"],"High performers may also feel underrewarded.");
+M(10,2,"Group incentives make most sense when:",["The work truly requires interdependent, joint effort","Each employee works alone","Output is easy to count per person","Managers want less cooperation"],"Use group incentives when the work requires joint effort.");
+M(10,2,"GAINSHARING rewards employees for:",["Measured improvements in productivity, quality, or controllable costs","Overall company profit","Stock price over three years","Seniority"],"Measure → Improve → Share.");
+M(10,3,"Profit sharing vs gainsharing:",["Profit sharing rewards the financial outcome; gainsharing emphasizes controllable improvements","They are identical","Gainsharing is tied to stock price","Profit sharing has stronger line of sight"],"Slide 8 bottom line.");
+M(10,2,"The main challenge of PROFIT sharing is:",["Most employees have little direct control over profits","It is never self-funded","It has the strongest line of sight","It ignores organizational success"],"Weak line of sight.");
+M(10,2,"An advantage of profit sharing is that:",["Variable pay can be largely self-funded","Employees directly control profits","It removes all financial risk","It eliminates free riding"],"Pays out only when profits exist.");
+M(10,3,"Key conditions for successful gainsharing:",["Credible measures, employee participation, and supportive management","Secret formulas and top-down control","Stock options for executives only","Forced ranking"],"Slide 7.");
+M(10,2,"A major risk of an ESOP is:",["Employees' wealth becomes concentrated in their employer's stock","Employees have too much line of sight","It is a one-year plan","It is only for production workers"],"Concentrated financial risk.");
+M(10,2,"Performance shares/units are usually tied to:",["Multi-year corporate objectives, often three years","Daily output","A single spot award","Seniority"],"Long-term = beyond the one-year horizon.");
+M(10,2,"Vesting in broad-based stock plans mainly supports:",["Retention","Free riding","Short-term output","Central tendency"],"You must stay to vest.");
+M(10,1,"Using the survey table, which plan is the most common short-term plan?",["Annual incentive plan","Spot cash awards","Profit sharing","Gainsharing"],"89% use an annual incentive plan.",T_SURVEY);
+M(10,2,"Using the survey table, which plan is LEAST common?",["Gainsharing","Team incentives","Profit sharing","Project bonus"],"Gainsharing is at 4%.",T_SURVEY);
+M(10,3,"Using the survey table, which conclusion is valid?",["Prevalence alone does not tell you payout size or motivational impact","Annual incentives are the most motivating plan","Gainsharing does not work","Spot awards pay more than retention bonuses"],"'Prevalence is not the same as payout size or motivational impact.'",T_SURVEY);
+M(10,2,"The illustrative combination plan in the chapter mixes:",["75% individual + 25% group/company","50% individual + 50% stock","25% individual + 75% group","100% profit sharing"],"Weights should reflect the work, not an automatic formula.");
+M(10,3,"What makes a pay-for-performance plan work? (pick the best set)",["Meaningful payout, challenging-but-achievable goals, accurate measures, clear communication","Many metrics, tiny payouts, secret rules","Only rewarding what is easy to measure","Maximum risk on every employee"],"Slide 11 'Make it work.'");
+M(10,1,"Long-term incentives differ from short-term incentives mainly because they:",["Extend beyond a one-year horizon","Are paid weekly","Never involve stock","Are always individual"],"Long-term = sustained value creation.");
+T(10,1,"A merit bonus builds into base salary.",false,"A merit bonus is a lump sum; it does NOT build into base.");
+T(10,1,"Gainsharing was the least common short-term plan in the illustrative survey.",true,"4%.");
+T(10,2,"ESOPs can expose employees to concentrated financial risk.",true,"Their savings ride on one company.");
+T(10,2,"Employee ownership alone guarantees better performance.",false,"'Ownership alone does not guarantee better performance.'");
+T(10,1,"Free riding is a disadvantage of group incentives.",true,"Some members coast on others' effort.");
+T(10,2,"Profit sharing usually gives employees stronger line of sight than gainsharing.",false,"Gainsharing focuses on controllable improvements, so it has stronger line of sight.");
+
+/* Chapter 11 */
+M(11,1,"Performance appraisals feed into:",["Merit increases, promotions, and employee development","Only the pay survey","Only benefits enrollment","Only the range spread"],"Appraisals connect performance to pay and other decisions.");
+M(11,1,"RANKING vs RATING formats:",["Ranking compares employees with each other; rating compares each employee with a standard","Both compare employees with each other","Ranking uses behavioral anchors; rating does not","Rating shows only order"],"Slide 3 bottom line.");
+M(11,2,"Paired comparison is a type of:",["Ranking format","Rating format","Essay format","MBO"],"Ranking: straight, alternation, paired comparisons.");
+M(11,2,"The main limitation of RANKING is that it:",["Shows order but not the size of differences between employees","Takes years to build anchors","Is hard to compare across employees","Ignores relative standing"],"#1 might be barely ahead or far ahead.");
+M(11,2,"BARS (behaviorally anchored rating scales):",["Define each level with concrete examples of job behavior","Rank employees from best to worst","Use only written essays","Rate only financial results"],"Strength: clearer standards.");
+M(11,2,"The main limitation of BARS is:",["The anchors take time to develop","It shows only order","Standards are vague adjectives","It cannot be used for teamwork"],"Slide 5.");
+M(11,2,"A standard rating scale's biggest limitation:",["'Above average' can mean different things to different raters","It is hard to administer","It cannot compare employees","It requires agreed objectives"],"Adjective anchors are interpreted differently.");
+M(11,2,"MBO (management by objectives) evaluates:",["Results against objectives the manager and employee agreed on in advance","Employees ranked against each other","Behavior using adjective scales","Written essays only"],"Agree on the result, deadline, and evidence of success.");
+M(11,3,"A main limitation of MBO is that:",["Goals may leave out important work or reflect factors outside the employee's control","It has no observable result","Anchors take too long to build","It only shows rank order"],"Slide 6.");
+M(11,2,"The essay format's main limitation:",["It is hard to compare employees","It shows only order","It requires a 5-point scale","It is too numerical"],"Slide 3.");
+M(11,3,"The five criteria for judging an appraisal format are:",["Development, administration, research, cost, and validity","Halo, horn, recency, leniency, severity","Expectancy, instrumentality, valence, equity, goals","Occupation, geography, competitors, product, size"],"Slide 7.");
+M(11,3,"A call-center job with clear, observable behaviors fits best with:",["BARS","Straight ranking","An essay","Profit sharing"],"Observable behaviors support behavioral anchors; clear agreed outcomes support MBO.");
+M(11,3,"A project manager with clear, agreed outcomes and deadlines fits best with:",["MBO","Paired comparison","Essay","Central tendency"],"Clear, agreed outcomes support MBO.");
+M(11,2,"The four balanced scorecard perspectives are:",["Financial, customer, internal processes, learning & growth","Lead, match, lag, mix","Base, cash, benefits, stock","Self, peer, boss, customer"],"Slide 2.");
+M(11,2,"360-degree feedback collects ratings from:",["Supervisors, peers, subordinates, customers, and self","Only the supervisor","Only HR","Only customers"],"Multiple perspectives — but they still need shared standards.");
+M(11,3,"INTERRATER RELIABILITY means:",["Different raters agree when rating the same performance","One rater is consistent over time only","Ratings match the market","Everyone gets the same rating"],"Should be assessed when using multiple raters.");
+M(11,2,"Subordinates are best positioned to rate a manager's:",["Leadership, coaching, and support","Financial results","Customer service","Pay level"],"Slide 8 rater table.");
+M(11,2,"Strong technical skills inflate ratings on teamwork and communication. This is:",["Halo error","Horn error","Recency error","Severity error"],"One strength raises all dimensions.");
+M(11,2,"One missed deadline drags down ratings on every dimension. This is:",["Horn error","Halo error","Leniency error","Spillover error"],"One weakness lowers all dimensions.");
+M(11,2,"A manager gives everyone 'exceeds expectations.' This is:",["Leniency error","Severity error","Central tendency","Halo error"],"Consistently too high.");
+M(11,2,"Both strong and weak performers get 'meets expectations.' This is:",["Central tendency","Leniency","Recency","Clone error"],"Rater avoids the extremes.");
+M(11,2,"A December success overshadows earlier missed goals. This is:",["Recency error","First impression error","Spillover error","Horn error"],"Recent performance outweighs the full period.");
+M(11,3,"Last year's poor rating persists despite clear improvement. This is:",["Spillover error","Recency error","Severity error","Central tendency"],"Past judgments carry into the current period.");
+M(11,3,"A familiar work style earns a higher rating than an equally effective one. This is:",["Clone / similarity error","Halo error","Leniency error","First impression error"],"Similarity to the rater.");
+M(11,3,"A weak first week defines the employee's entire review. This is:",["First impression error","Recency error","Spillover error","Horn error"],"An early impression shapes later judgments.");
+M(11,2,"A demanding manager gives strong performers low ratings. This is:",["Severity error","Leniency error","Central tendency","Clone error"],"Consistently too harsh.");
+M(11,2,"RATER-ERROR training:",["Explains common biases so raters can avoid them","Clarifies which dimensions to evaluate","Uses examples to practice applying standards","Sets the merit budget"],"Three trainings: rater-error, performance-dimension, performance-standard.");
+M(11,3,"PERFORMANCE-DIMENSION training:",["Clarifies what to evaluate","Explains common biases","Uses examples to practice applying standards","Compares ratings in a meeting"],"Dimension = WHAT to evaluate.");
+M(11,3,"PERFORMANCE-STANDARD training:",["Uses examples to practice applying standards","Clarifies what to evaluate","Lists rating errors","Sets compa-ratios"],"Standard = HOW GOOD each level is, practiced with examples.");
+M(11,2,"In a CALIBRATION meeting, managers:",["Compare draft ratings with evidence for similar work and revise when warranted","Rank all employees by seniority","Set the pay survey sample","Decide stock grants"],"Can also improve managers' motivation to rate accurately.");
+M(11,2,"The three stages where rater judgment goes wrong are:",["Observation/attention, storage/recall, and evaluation","Strategy, behaviors, rewards","Measure, improve, share","Attraction, retention, turnover"],"Slide 9.");
+M(11,3,"Using the merit grid: salary $44,000, midpoint $50,000, rated EXCEEDS. New salary?",["$46,640","$46,200","$45,760","$44,000"],"CR = 0.88 (< 0.90) → 6% → $44,000 × 1.06 = $46,640.",T_GRID11);
+M(11,3,"Using the merit grid: salary $67,800, midpoint $60,000, rated MEETS. What raise %?",["2%","3%","4%","0%"],"CR = 1.13 (> 1.10) → Meets → 2%.",T_GRID11);
+M(11,2,"Using the merit grid, an employee rated BELOW expectations with CR 0.85 gets:",["0%","2%","4%","6%"],"Below expectations earns 0% in every column of this grid.",T_GRID11);
+M(11,2,"A GENERAL increase is:",["A common adjustment for everyone, sometimes tied to living costs","A raise based on appraised performance","A raise based on tenure","A one-time spot award"],"Merit = performance; general = common; seniority = tenure.");
+M(11,2,"Which is a MANAGER responsibility in performance management?",["Give timely feedback and coach employees through problems","Seek feedback and receive it openly","Agree on deadlines with peers","Clarify one's own priorities"],"The others are employee responsibilities.");
+M(11,2,"Results vs behaviors as performance measures:",["Results capture outcomes; behaviors capture how the work is done","They are the same","Behaviors capture only profit","Results capture only effort"],"Slide 2.");
+T(11,1,"Ranking shows how much better one employee is than another.",false,"Ranking shows order but not the size of the differences.");
+T(11,1,"Halo error is when one strength raises ratings across dimensions.",true,"Horn is the opposite.");
+T(11,2,"Central tendency means ratings are consistently too high.",false,"Too high = leniency. Central tendency avoids the extremes.");
+T(11,2,"Using 360-degree feedback removes the need to check interrater reliability.",false,"Multiple raters still need shared standards; reliability should be assessed.");
+T(11,2,"Calibration meetings can improve managers' motivation to rate accurately.",true,"Slide 12.");
+T(11,2,"In the illustrative merit grid, below-expectations performers get 0% regardless of compa-ratio.",true,"Bottom row is 0/0/0.");
+T(11,1,"MBO evaluates outcomes against goals agreed on in advance.",true,"Management by objectives.");
+
+/* ---------- short answers ---------- */
+const CONCEPT_SA = [
+  { c: 9, q: "Explain expectancy theory (all three links) and describe one way a pay-for-performance plan could FAIL to motivate because of it.",
+    model: "Expectancy: will my effort improve performance? Instrumentality: will performance lead to a reward? Valence: do I value the reward? Motivation = E × I × V, so if any link is near zero, motivation collapses. Example: a sales bonus fails if reps can't influence sales (low expectancy/line of sight), if payouts aren't credible (low instrumentality), or if the reward is too small to matter (low valence).",
+    rub: [
+      { p: 2, l: "Expectancy: effort → performance", re: [/expectan/, /effort[^.]{0,60}perform/] },
+      { p: 2, l: "Instrumentality: performance → reward", re: [/instrumental/, /perform[^.]{0,60}reward/] },
+      { p: 2, l: "Valence: value of the reward", re: [/valen/, /valu/] },
+      { p: 2, l: "All three multiply / any zero kills it", re: [/multipl/, /all three/, /\bzero\b/, /e\s*[x×*]\s*i/, /any (one )?link/, /each link/, /weak link/] },
+      { p: 2, l: "A concrete failure example", re: [/line.of.sight/, /control/, /influence/, /credib/, /trust/, /too (small|hard|low)/, /not valued|don.?t value|doesn.?t value/, /unattainab|unrealistic/, /example|for instance|e\.g/] }
+    ] },
+  { c: 10, q: "Compare gainsharing and profit sharing. Then give one advantage and one disadvantage of group incentives.",
+    model: "Gainsharing shares measured improvements in productivity, quality, or controllable costs with the unit, often with employee committees; line of sight is stronger. Profit sharing pays out based on organizational profit — it can be self-funded but most employees have little control over profit. Group incentives encourage cooperation and coordination, but suffer from free riding and high performers may feel underrewarded.",
+    rub: [
+      { p: 2, l: "Gainsharing = productivity/quality/cost improvements", re: [/productiv/, /saving/, /cost/, /quality/, /improve/] },
+      { p: 2, l: "Profit sharing = tied to company profit", re: [/profit[^.]{0,60}(company|organi|firm|financial|overall)/, /(company|organi|firm|overall)[^.]{0,60}profit/] },
+      { p: 2, l: "Line of sight / control difference", re: [/line.of.sight/, /control/, /influence/] },
+      { p: 2, l: "Group advantage (cooperation, coordination, shared goals, self-funded)", re: [/cooperat/, /coordinat/, /teamwork/, /shared goal/, /particip/, /self.?fund/, /collaborat/] },
+      { p: 2, l: "Group disadvantage (free riding, high performers underrewarded, complexity)", re: [/free.?rid/, /loaf/, /underreward|under.?reward/, /high performers/, /complex/, /uncontrollab/] }
+    ] },
+  { c: 7, q: "Describe lead, match, and lag pay-level policies and give one risk of leading and one risk of lagging.",
+    model: "Lead pays above the market; it helps attraction and retention but raises labor costs that must be recovered through productivity, quality, or innovation. Match pays near market — comparable costs but no pay advantage. Lag pays below market — lower current costs but hiring and retention may suffer.",
+    rub: [
+      { p: 2, l: "Lead = above market", re: [/lead[^.]{0,60}(above|higher|more than)/, /(above|higher)[^.]{0,40}lead/] },
+      { p: 2, l: "Match = at/near market", re: [/match[^.]{0,60}(market|same|equal|near|compar|at)/] },
+      { p: 2, l: "Lag = below market", re: [/lag[^.]{0,60}(below|lower|less)/, /(below|lower)[^.]{0,40}lag/] },
+      { p: 2, l: "Risk of leading: cost needs a return", re: [/cost/, /expens/, /return/, /productiv/] },
+      { p: 2, l: "Risk of lagging: attraction/retention", re: [/retain|retention/, /turnover/, /attract/, /hir/, /recruit/, /quit|leave/] }
+    ] },
+  { c: 11, q: "Name and define three rating errors, and describe one way to reduce them.",
+    model: "Halo: one strength raises ratings on all dimensions. Leniency: ratings consistently too high. Recency: recent events outweigh the whole period. (Also horn, severity, central tendency, first impression, clone/similarity, spillover.) Reduce them with rater-error training, performance-dimension or standard training, calibration meetings, multiple raters (360), and documenting evidence through the year.",
+    rub: [
+      { p: 6, l: "Three named errors (2 pts each)", count: [/halo/, /horn/, /recen/, /lenien/, /severit|harsh/, /central/, /first impression/, /clone|similar/, /spillover/], each: 2 },
+      { p: 2, l: "Definitions given (e.g., too high, recent, across dimensions)", re: [/too high|too harsh|too low/, /recent/, /across|all dimensions|every dimension/, /middle|average|avoid/, /early/, /like (the )?rater|similar to/] },
+      { p: 2, l: "A remedy (training, calibration, 360, documentation)", re: [/training/, /calibrat/, /360/, /multiple raters/, /document/, /journal|diary|notes/, /bars/] }
+    ] },
+  { c: 9, q: "Explain the difference between the SORTING and INCENTIVE effects of pay for performance, with an example of each.",
+    model: "Sorting effects change who joins, stays, and leaves — e.g., a commission-heavy plan attracts risk-tolerant high performers and pushes low performers out. Incentive effects change how current employees work — e.g., a piece rate makes existing workers increase their effort/output.",
+    rub: [
+      { p: 3, l: "Sorting = who joins/stays/leaves (composition)", re: [/sort[^.]{0,80}(who|join|attract|stay|leave|turnover|retain|composition|apply)/, /(who|attract|join)[^.]{0,60}sort/] },
+      { p: 3, l: "Incentive = how current employees change effort/behavior", re: [/incentive[^.]{0,80}(effort|behavio|perform|motivat|harder|how)/] },
+      { p: 2, l: "A concrete example", re: [/example|e\.g|for instance|such as/, /commission/, /piece/, /bonus/, /sales/] },
+      { p: 2, l: "Who is attracted / who leaves (risk-tolerant, high vs low performers)", re: [/risk/, /high performer|top performer|strong performer/, /low performer|poor performer|weak performer/] }
+    ] }
+];
+
+function grid11Pct(rating, cr) { const col = cr < 0.90 ? 0 : cr <= 1.10 ? 1 : 2; return { Exceeds: [6, 5, 4], Meets: [4, 3, 2], Below: [0, 0, 0] }[rating][col]; }
+function makeChartSA(r) {
+  const mid = [50000, 56000, 60000, 64000, 70000, 80000][Math.floor(r() * 6)];
+  const crT = [[0.84, 0.86, 0.88], [0.94, 0.97, 1.0, 1.04], [1.13, 1.15, 1.17]][Math.floor(r() * 3)];
+  const target = crT[Math.floor(r() * crT.length)];
+  const salary = Math.round(mid * target / 100) * 100;
+  const cr = Math.round(salary / mid * 100) / 100;
+  const rating = r() < 0.55 ? "Exceeds" : "Meets";
+  const pct = grid11Pct(rating, salary / mid);
+  const newSal = Math.round(salary * (1 + pct / 100));
+  return { kind: "sa", sub: "chart", c: 11, d: 3, mid, salary, cr, rating, pct, newSal, min: Math.round(mid * 0.8), max: Math.round(mid * 1.2),
+    q: `Use the Grade chart and the merit grid. An employee earns ${fmt$(salary)} in a grade with a ${fmt$(mid)} midpoint and is rated ${rating.toUpperCase()}.`,
+    e: `CR = ${fmt$(salary)} ÷ ${fmt$(mid)} = ${cr.toFixed(2)} → ${rating} → ${pct}% → new salary ${fmt$(newSal)}. Lower-positioned employees get bigger % raises to move them toward the midpoint (market); those high in the range get less to control cost and stay under the maximum.` };
+}
+function makeConceptSA(r) { const s = CONCEPT_SA[Math.floor(r() * CONCEPT_SA.length)]; return { kind: "sa", sub: "concept", c: s.c, d: 3, q: s.q, model: s.model, rub: s.rub, e: s.model }; }
+function fmt$(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
+
+/* ---------- graders ---------- */
+function nums(str) {
+  const out = []; const re = /\$?\s*(\d[\d,]*\.?\d*)\s*(k\b)?/gi; let m;
+  while ((m = re.exec(str))) { let v = parseFloat(m[1].replace(/,/g, "")); if (isNaN(v)) continue; if (m[2]) v *= 1000; out.push(v); }
+  return out;
+}
+function gradeChart(q, ans) {
+  const items = []; let total = 0;
+  const a = nums(ans.a || ""); let ap = 0;
+  for (const v0 of a) { const v = v0 > 3 ? v0 / 100 : v0; const d = Math.abs(v - q.salary / q.mid); if (d <= 0.011) ap = 3; else if (d <= 0.03 && ap < 1) ap = 1; }
+  items.push({ ok: ap, p: 3, l: `(a) Compa-ratio ≈ ${q.cr.toFixed(2)}` }); total += ap;
+  const b = nums(ans.b || ""); let bp = 0;
+  if (b.some(v => Math.abs(v - q.pct) < 0.01) || (q.pct === 0 && /\b(no|zero|none)\b/i.test(ans.b || ""))) bp = 2;
+  items.push({ ok: bp, p: 2, l: `(b) Merit increase = ${q.pct}%` }); total += bp;
+  const c = nums(ans.c || ""); let cp = 0;
+  for (const v of c) { const d = Math.abs(v - q.newSal); if (d <= 15) cp = 3; else if (d / q.newSal <= 0.01 && cp < 1) cp = 1; }
+  items.push({ ok: cp, p: 3, l: `(c) New salary ≈ ${fmt$(q.newSal)}` }); total += cp;
+  const kw = [/midpoint/, /market/, /max/, /cost|budget/, /catch|toward|move up|closer/, /above|high in|already|top of/, /control|compress|cap|limit/, /range/, /position/];
+  const t = (ans.d || "").toLowerCase(); const hits = kw.filter(k => k.test(t)).length; const dp = hits >= 2 ? 2 : hits === 1 ? 1 : 0;
+  items.push({ ok: dp, p: 2, l: "(d) Reason: pay position in the range / move toward midpoint / control cost" }); total += dp;
+  return { score: total, items };
+}
+function gradeConcept(q, text) {
+  const t = (text || "").toLowerCase(); const items = []; let total = 0;
+  for (const rb of q.rub) {
+    let got = 0;
+    if (rb.count) { const n = rb.count.filter(k => k.test(t)).length; got = Math.min(rb.p, n * rb.each); }
+    else if (rb.re.some(k => k.test(t))) got = rb.p;
+    items.push({ ok: got, p: rb.p, l: rb.l }); total += got;
+  }
+  const words = t.split(/\s+/).filter(Boolean).length;
+  if (words < 15 && total > 4) { total = 4; items.push({ ok: 0, p: 0, l: "Answer under 15 words — capped at 4/10" }); }
+  return { score: total, items };
+}
+
+/* ---------- creatures (doodle SVG) ---------- */
+const BODY = {
+  round: { d: '<ellipse cx="50" cy="62" rx="27" ry="24"/>', t: 38, e: 54, l: 23, r: 77, b: 84 },
+  tall: { d: '<rect x="32" y="30" width="36" height="54" rx="17"/>', t: 30, e: 46, l: 32, r: 68, b: 84 },
+  wide: { d: '<ellipse cx="50" cy="66" rx="36" ry="19"/>', t: 47, e: 60, l: 14, r: 86, b: 83 },
+  tri: { d: '<path d="M50 28 Q54 28 82 82 Q50 88 18 82 Q46 28 50 28Z"/>', t: 30, e: 58, l: 28, r: 72, b: 84 },
+  blob: { d: '<path d="M28 70 C16 50 32 32 50 34 C70 30 88 50 76 72 C68 88 36 88 28 70Z"/>', t: 34, e: 52, l: 20, r: 80, b: 84 }
+};
+const EARS = {
+  none: () => "",
+  cat: t => `<path d="M35 ${t + 8} L31 ${t - 12} L47 ${t + 2}Z M65 ${t + 8} L69 ${t - 12} L53 ${t + 2}Z"/>`,
+  round: t => `<circle cx="33" cy="${t + 3}" r="9"/><circle cx="67" cy="${t + 3}" r="9"/>`,
+  biground: t => `<circle cx="30" cy="${t + 1}" r="13"/><circle cx="70" cy="${t + 1}" r="13"/>`,
+  antenna: t => `<path d="M44 ${t + 2} L38 ${t - 14} M56 ${t + 2} L62 ${t - 14}" fill="none"/><circle cx="38" cy="${t - 16}" r="3" fill="#111"/><circle cx="62" cy="${t - 16}" r="3" fill="#111"/>`,
+  horns: t => `<path d="M38 ${t + 6} Q28 ${t - 4} 32 ${t - 17} Q38 ${t - 4} 46 ${t + 2}Z M62 ${t + 6} Q72 ${t - 4} 68 ${t - 17} Q62 ${t - 4} 54 ${t + 2}Z"/>`,
+  crest: t => `<path d="M50 ${t + 2} Q44 ${t - 14} 52 ${t - 20} M50 ${t + 2} Q58 ${t - 10} 64 ${t - 13}" fill="none"/>`
+};
+const EYES = {
+  dot: e => `<circle cx="43" cy="${e}" r="3" fill="#111"/><circle cx="57" cy="${e}" r="3" fill="#111"/>`,
+  big: e => `<circle cx="42" cy="${e}" r="6.5"/><circle cx="58" cy="${e}" r="6.5"/><circle cx="43" cy="${e + 1}" r="2.6" fill="#111"/><circle cx="59" cy="${e + 1}" r="2.6" fill="#111"/>`,
+  angry: e => `<circle cx="43" cy="${e}" r="3" fill="#111"/><circle cx="57" cy="${e}" r="3" fill="#111"/><path d="M36 ${e - 9} L47 ${e - 4} M64 ${e - 9} L53 ${e - 4}" fill="none"/>`,
+  sleepy: e => `<path d="M38 ${e} Q43 ${e + 4} 48 ${e} M52 ${e} Q57 ${e + 4} 62 ${e}" fill="none"/>`,
+  ko: e => `<path d="M39 ${e - 4} L47 ${e + 4} M47 ${e - 4} L39 ${e + 4} M53 ${e - 4} L61 ${e + 4} M61 ${e - 4} L53 ${e + 4}" fill="none"/>`
+};
+const MOUTH = {
+  smile: m => `<path d="M44 ${m} Q50 ${m + 6} 56 ${m}" fill="none"/>`,
+  open: m => `<ellipse cx="50" cy="${m + 2}" rx="4" ry="4.5"/>`,
+  zig: m => `<path d="M42 ${m} L45 ${m + 4} L48 ${m} L51 ${m + 4} L54 ${m} L57 ${m + 4}" fill="none"/>`,
+  flat: m => `<path d="M45 ${m + 1} L55 ${m + 1}" fill="none"/>`
+};
+function starPts(cx, cy, R, r) { let s = ""; for (let i = 0; i < 10; i++) { const a = Math.PI / 5 * i - Math.PI / 2, rr = i % 2 ? r : R; s += (cx + rr * Math.cos(a)).toFixed(1) + "," + (cy + rr * Math.sin(a)).toFixed(1) + " "; } return s; }
+const ACC = {
+  halo: t => `<ellipse cx="50" cy="${t - 15}" rx="16" ry="4.5" fill="none"/>`,
+  crown: t => `<path d="M37 ${t + 1} L37 ${t - 14} L43.5 ${t - 6} L50 ${t - 17} L56.5 ${t - 6} L63 ${t - 14} L63 ${t + 1}Z"/>`,
+  gradcap: t => `<path d="M30 ${t - 3} L50 ${t - 11} L70 ${t - 3} L50 ${t + 5}Z" fill="#111"/><path d="M66 ${t - 2} L68 ${t + 10}" fill="none"/>`,
+  arrowUp: t => `<path d="M84 ${t + 10} L84 ${t - 14} M76 ${t - 6} L84 ${t - 14} L92 ${t - 6}" fill="none" stroke-width="3.6"/>`,
+  arrowDown: t => `<path d="M84 ${t - 14} L84 ${t + 10} M76 ${t + 2} L84 ${t + 10} L92 ${t + 2}" fill="none" stroke-width="3.6"/>`,
+  dollar: t => `<text x="77" y="${t + 4}" font-size="26" font-family="Georgia,serif" font-weight="bold" fill="#111" stroke="none">$</text>`,
+  pie: t => `<circle cx="84" cy="${t - 4}" r="9"/><path d="M84 ${t - 4} L84 ${t - 13} A9 9 0 0 1 92.6 ${t - 1.2} Z" fill="#111"/>`,
+  chart: t => `<path d="M73 ${t + 5} L95 ${t + 5}" fill="none"/><rect x="76" y="${t - 1}" width="4" height="6"/><rect x="82" y="${t - 7}" width="4" height="12"/><rect x="88" y="${t - 14}" width="4" height="19"/><path d="M73 ${t + 1} L96 ${t - 18}" fill="none" stroke-width="1.8" stroke-dasharray="2 3"/>`,
+  stairs: t => `<path d="M72 ${t + 6} L72 ${t} L78 ${t} L78 ${t - 6} L84 ${t - 6} L84 ${t - 12} L90 ${t - 12} L90 ${t + 6} Z"/>`,
+  glasses: (t, e) => `<circle cx="42" cy="${e}" r="7.5" fill="none"/><circle cx="58" cy="${e}" r="7.5" fill="none"/><path d="M49.5 ${e - 1} L50.5 ${e - 1}" fill="none"/>`,
+  tie: (t, e) => `<path d="M47 ${e + 13} L53 ${e + 13} L51 ${e + 17} L54 ${e + 28} L50 ${e + 32} L46 ${e + 28} L49 ${e + 17} Z" fill="#111"/>`,
+  star: t => `<polygon points="${starPts(84, t - 4, 10, 4.2)}"/>`,
+  scale: t => `<path d="M84 ${t + 8} L84 ${t - 14} M73 ${t - 10} L95 ${t - 10} M73 ${t - 10} L70 ${t - 1} M73 ${t - 10} L76 ${t - 1} M95 ${t - 10} L92 ${t - 1} M95 ${t - 10} L98 ${t - 1} M69 ${t - 1} Q73 ${t + 4} 77 ${t - 1} M91 ${t - 1} Q95 ${t + 4} 99 ${t - 1}" fill="none" stroke-width="2.2"/>`,
+  stopwatch: t => `<circle cx="84" cy="${t - 2}" r="9"/><path d="M84 ${t - 11} L84 ${t - 15} M81 ${t - 15} L87 ${t - 15} M84 ${t - 2} L88 ${t - 7}" fill="none"/>`,
+  pyramid: t => `<path d="M84 ${t - 17} L96 ${t + 6} L72 ${t + 6} Z M78 ${t - 4} L90 ${t - 4} M81 ${t - 10} L87 ${t - 10}"/>`,
+  ruler: t => `<rect x="72" y="${t - 7}" width="25" height="9"/><path d="M76 ${t - 7} v3 M80 ${t - 7} v5 M84 ${t - 7} v3 M88 ${t - 7} v5 M92 ${t - 7} v3" fill="none" stroke-width="1.6"/>`,
+  one: t => `<text x="72" y="${t + 2}" font-size="17" font-weight="bold" fill="#111" stroke="none">#1</text>`,
+  gear: t => { let s = `<circle cx="84" cy="${t - 4}" r="7.5"/><circle cx="84" cy="${t - 4}" r="2.4" fill="#111"/><path d="`; for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; s += `M${(84 + 7.5 * Math.cos(a)).toFixed(1)} ${(t - 4 + 7.5 * Math.sin(a)).toFixed(1)} L${(84 + 11 * Math.cos(a)).toFixed(1)} ${(t - 4 + 11 * Math.sin(a)).toFixed(1)} `; } return s + `" fill="none" stroke-width="3"/>`; }
+};
+const PAT = {
+  stripes: b => `<path d="M${b.l + 7} ${b.e + 9} q5 3 9 0 M${b.l + 7} ${b.e + 17} q5 3 9 0 M${b.r - 16} ${b.e + 9} q5 3 9 0 M${b.r - 16} ${b.e + 17} q5 3 9 0" fill="none" stroke-width="2"/>`,
+  spots: b => `<circle cx="38" cy="${b.e + 17}" r="2.6" fill="#111"/><circle cx="61" cy="${b.e + 19}" r="2.6" fill="#111"/><circle cx="51" cy="${b.e + 24}" r="2" fill="#111"/>`,
+  belly: b => `<ellipse cx="50" cy="${b.b - 6}" rx="10" ry="4.5" fill="none" stroke-width="2"/>`,
+  bands: b => `<path d="M${b.l + 10} ${b.e + 12} L${b.r - 10} ${b.e + 12} M${b.l + 14} ${b.e + 18} L${b.r - 14} ${b.e + 18}" fill="none" stroke-width="2.4"/>`,
+  mask: b => `<rect x="32" y="${b.e - 7}" width="36" height="14" rx="7" fill="#111"/>`,
+  fluffy: () => ""
+};
+function fluff() { let s = ""; for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2; s += `<circle cx="${(50 + 28 * Math.cos(a)).toFixed(1)}" cy="${(62 + 25 * Math.sin(a)).toFixed(1)}" r="8"/>`; } return s; }
+function drawParts(p, ko) {
+  const b = BODY[p.body], t = b.t, e = b.e; let s = "";
+  if (p.tail) s += `<path d="M${b.r - 4} ${b.b - 8} Q${b.r + 15} ${b.b - 6} ${b.r + 10} ${b.b - 25}" fill="none"/>`;
+  s += EARS[p.ears || "none"](t);
+  s += `<path d="M40 ${b.b - 3} L38 ${b.b + 9} L33 ${b.b + 9} M60 ${b.b - 3} L62 ${b.b + 9} L67 ${b.b + 9}" fill="none"/>`;
+  if (p.pat === "fluffy") s += fluff();
+  s += b.d;
+  if (p.pat && PAT[p.pat]) s += PAT[p.pat](b);
+  s += `<path d="M${b.l + 3} ${e + 14} L${b.l - 9} ${e + 6} M${b.r - 3} ${e + 14} L${b.r + 9} ${e + 6}" fill="none"/>`;
+  s += ko ? EYES.ko(e) : EYES[p.eyes || "dot"](e);
+  s += MOUTH[ko ? "flat" : (p.mouth || "smile")](e + 11);
+  (p.acc || []).forEach(a => s += ACC[a](t, e));
+  return s;
+}
+function monSVG(id, size = 110, ko = false, flip = false) {
+  const sp = SP[id];
+  const inner = sp.heads
+    ? sp.heads.map((h, i) => `<g transform="translate(${i ? 30 : -8},${i ? 2 : 10}) scale(.78)">${drawParts({ ...sp, ...h }, ko)}</g>`).join("")
+    : drawParts(sp, ko);
+  return `<svg viewBox="-8 -22 116 122" width="${size}" height="${size}" class="mon${flip ? " flip" : ""}" aria-label="${sp.name}"><g filter="url(#wob)" stroke="#111" stroke-width="${sp.boss ? 3.2 : 2.8}" stroke-linecap="round" stroke-linejoin="round" fill="#fff">${inner}</g></svg>`;
+}
+function trainerSVG(size = 70) {
+  return `<svg viewBox="0 0 60 90" width="${size * 0.67}" height="${size}" class="mon"><g filter="url(#wob)" stroke="#111" stroke-width="3" fill="#fff" stroke-linecap="round"><circle cx="30" cy="18" r="10"/><path d="M16 10 L30 3 L44 10 L30 16Z" fill="#111"/><path d="M41 10 L43 20" fill="none"/><path d="M30 28 L30 58 M30 36 L16 48 M30 36 L46 30 M30 58 L20 82 M30 58 L40 82" fill="none"/><circle cx="26" cy="18" r="1.4" fill="#111"/><circle cx="34" cy="18" r="1.4" fill="#111"/><path d="M26 23 Q30 26 34 23" fill="none"/><rect x="44" y="22" width="12" height="15" rx="2"/><path d="M47 27 L53 27 M47 31 L53 31" fill="none" stroke-width="1.5"/></g></svg>`;
+}
+
+/* species: c = chapter type */
+const SP = {
+  leadling: { name: "Leadling", c: 7, body: "round", ears: "cat", eyes: "big", mouth: "smile", acc: ["arrowUp"], tail: 1, fl: "Pays above market. Purrs when retention is high." },
+  lagmole: { name: "Lagmole", c: 7, body: "wide", ears: "round", eyes: "sleepy", mouth: "flat", pat: "belly", acc: ["arrowDown"], fl: "Lags the market. Cheap now, lonely later." },
+  mixmunk: { name: "Mixmunk", c: 7, body: "blob", ears: "round", eyes: "big", mouth: "open", pat: "stripes", acc: ["pie"], tail: 1, fl: "Stuffs base, bonus, and benefits in its cheeks." },
+  wagewolf: { name: "Wagewolf", c: 7, body: "tall", ears: "cat", eyes: "angry", mouth: "zig", pat: "belly", acc: ["dollar"], tail: 1, fl: "Hunts only where marginal revenue beats the wage." },
+  benchmouse: { name: "Benchmouse", c: 8, body: "round", ears: "biground", eyes: "dot", mouth: "smile", acc: ["glasses"], tail: 1, fl: "Matches job content, never just titles." },
+  bandicoot: { name: "Bandicoot", c: 8, body: "wide", ears: "cat", eyes: "big", mouth: "smile", pat: "bands", tail: 1, fl: "Fewer, wider bands. Loves lateral moves." },
+  gradegator: { name: "Gradegator", c: 8, body: "wide", ears: "none", eyes: "angry", mouth: "zig", pat: "spots", acc: ["stairs"], tail: 1, fl: "Climbs one pay grade at a time." },
+  regressnake: { name: "Regressnake", c: 8, body: "tall", ears: "none", eyes: "dot", mouth: "smile", pat: "stripes", acc: ["chart"], fl: "Fits a line through every benchmark job." },
+  expectoad: { name: "Expectoad", c: 9, body: "wide", ears: "none", eyes: "big", mouth: "open", pat: "spots", acc: ["star"], fl: "E × I × V. If one is zero, it croaks." },
+  herzbird: { name: "Herzbird", c: 9, body: "tri", ears: "crest", eyes: "dot", mouth: "smile", acc: ["tie"], fl: "Hygiene first, motivators second." },
+  maslowth: { name: "Maslowth", c: 9, body: "tall", ears: "round", eyes: "sleepy", mouth: "smile", pat: "belly", acc: ["pyramid"], fl: "Climbs the needs pyramid very, very slowly." },
+  equitern: { name: "Equitern", c: 9, body: "tri", ears: "none", eyes: "dot", mouth: "flat", acc: ["scale"], fl: "Always comparing its fish to yours." },
+  gainsheep: { name: "Gainsheep", c: 10, body: "round", ears: "round", eyes: "dot", mouth: "smile", pat: "fluffy", acc: ["gear"], fl: "Shares the savings it helps create." },
+  profitox: { name: "Profitox", c: 10, body: "tall", ears: "cat", eyes: "angry", mouth: "smile", pat: "belly", acc: ["dollar"], tail: 1, fl: "Only pays out when the firm profits." },
+  piecerat: { name: "Piecerat", c: 10, body: "round", ears: "round", eyes: "big", mouth: "zig", acc: ["stopwatch"], tail: 1, fl: "Paid per cheese wheel. Do not distract." },
+  esopossum: { name: "ESOPossum", c: 10, body: "blob", ears: "round", eyes: "big", mouth: "flat", pat: "mask", acc: ["crown"], tail: 1, fl: "Owns a piece of the company. Nervous about it." },
+  halowl: { name: "Halowl", c: 11, body: "round", ears: "cat", eyes: "big", mouth: "smile", acc: ["halo"], fl: "One great skill makes everything look great." },
+  hornet: { name: "Hornet", c: 11, body: "blob", ears: "horns", eyes: "angry", mouth: "zig", pat: "stripes", fl: "One mistake stings every rating." },
+  calibrat: { name: "Calibrat", c: 11, body: "round", ears: "cat", eyes: "big", mouth: "open", acc: ["ruler"], fl: "Compares ratings until everyone agrees." },
+  rankoon: { name: "Rankoon", c: 11, body: "blob", ears: "round", eyes: "big", mouth: "smile", pat: "mask", acc: ["one"], tail: 1, fl: "Ranks everyone. Can't tell you by how much." },
+  maw: { name: "Market Maw", c: 7, boss: 1, body: "wide", ears: "horns", eyes: "angry", mouth: "zig", pat: "bands", acc: ["dollar"], tail: 1, fl: "Swallows firms that lag too far behind." },
+  gamer: { name: "The Metric Gamer", c: 10, boss: 1, body: "tall", ears: "antenna", eyes: "angry", mouth: "zig", pat: "stripes", acc: ["crown", "chart"], fl: "Rewards A while hoping for B. Games every metric." },
+  hydra: { name: "Halo-Horn Hydra", c: 11, boss: 1, body: "tall", pat: "belly", heads: [{ ears: "none", acc: ["halo"], eyes: "big", mouth: "smile" }, { ears: "horns", acc: [], eyes: "angry", mouth: "zig" }], fl: "One head flatters, one head stings. Both are biased." }
+};
+const STARTERS = ["leadling", "expectoad", "halowl"];
+
+/* ---------- items ---------- */
+const ITEMS = {
+  coffee: { n: "Coffee", i: "☕", d: "Heal active Compémon 50 HP." },
+  pizza: { n: "Pizza Party", i: "🍕", d: "Heal whole team 35 HP." },
+  spot: { n: "Spot Award", i: "⭐", d: "Your next hit does 2× damage." },
+  shield: { n: "Retention Bonus", i: "🛡️", d: "Auto-block the next attack you fail to block." },
+  raise: { n: "Market Adjustment", i: "📈", d: "Active Compémon: +15 max HP and heal 15." },
+  stapler: { n: "Golden Stapler", i: "📎", d: "Active Compémon gains +1 level." },
+  cheat: { n: "Cheat Sheet", i: "📄", d: "Quiz only: cross out 2 wrong answers.", assist: 1 },
+  peer: { n: "Peer Review", i: "👥", d: "Quiz only: see how 20 classmates voted.", assist: 1 }
+};
+
+/* ---------- run plans ----------
+   Battles alternate turns: YOUR ATTACK (correct = hit) and FOE ATTACK (correct = block).
+   A battle lasts until one side has no Compémon left. Fainted Compémon are gone for good.
+   Quiz: endless multiple choice from the zone's chapters.
+   Test: exactly 40 questions (12 / 14 / 14 by zone). Wild battles fill a zone until only
+   the boss reserve is left; the boss team then gets the rest.                          */
+const HIT = 50, WILD_HP = 75, BOSS_HP = 150;
+const ZONES = [
+  { name: "Market Meadow", ch: [7, 8], maxD: 2, dmg: 26, lvl: 3, quizBoss: ["maw"], testBoss: ["maw"], reserve: 5, blurb: "Chapters 7–8: markets, surveys, structures. Warm-up difficulty. The boss fights alone." },
+  { name: "Motivation Marsh", ch: [9, 10], maxD: 3, dmg: 34, lvl: 5, quizBoss: ["@", "gamer"], testBoss: ["@", "gamer"], reserve: 10, blurb: "Chapters 9–10: motivation and pay-for-performance plans. Enemies hit harder; the boss brings a partner." },
+  { name: "Appraisal Peak", ch: [11], maxD: 3, dmg: 42, lvl: 7, quizBoss: ["@", "@", "hydra"], testBoss: ["@", "hydra"], reserve: 10, blurb: "Chapter 11: appraisals and rating errors. Hardest zone; the boss brings a team." }
+];
+const TEST_MIX = [{ mc: 9, tf: 3 }, { mc: 11, tf: 3 }, { mc: 9, tf: 3, sa: 2 }];
+function balancedPick(pool, n, r) {
+  const by = {}; shuffle(pool, r).forEach(q => (by[q.c] = by[q.c] || []).push(q));
+  const keys = shuffle(Object.keys(by), r); const out = []; let i = 0;
+  while (out.length < n && keys.some(k => by[k].length)) { const k = keys[i++ % keys.length]; if (by[k].length) out.push(by[k].pop()); }
+  return out;
+}
+function prepQ(q, r) {
+  if (q.kind === "tf") return { ...q, opts: ["True", "False"], ans: q.tf ? 0 : 1 };
+  const order = shuffle([0, 1, 2, 3], r);
+  return { ...q, opts: order.map(i => q.a[i]), ans: order.indexOf(0) };
+}
+function buildZones(mode, seed) {
+  const rq = rngFor(seed, "q-" + mode), re = rngFor(seed, "enc");
+  return ZONES.map((Z, zi) => {
+    const pool = BANK.filter(q => Z.ch.includes(q.c) && q.d <= Z.maxD);
+    let qs = [];
+    if (mode === "test") {
+      const tm = TEST_MIX[zi];
+      qs = balancedPick(pool.filter(q => q.kind === "mc"), tm.mc, rq).concat(balancedPick(pool.filter(q => q.kind === "tf"), tm.tf, rq));
+      qs = shuffle(qs, rq).sort((a, b) => a.d - b.d).map(q => prepQ(q, rq));
+      if (tm.sa) { qs.push(makeConceptSA(rq)); qs.push(makeChartSA(rq)); }
+    } else {
+      const mcs = pool.filter(q => q.kind === "mc");
+      for (let k = 0; k < 3; k++) { let cyc = shuffle(mcs, rq); if (k === 0) cyc = cyc.sort((a, b) => a.d - b.d); qs = qs.concat(cyc.map(q => prepQ(q, rq))); }
+    }
+    const species = Object.keys(SP).filter(k => !SP[k].boss && Z.ch.includes(SP[k].c));
+    const wild = shuffle(species, re), minions = shuffle(species, re);
+    const bossTeam = (mode === "test" ? Z.testBoss : Z.quizBoss).map((s, i) => s === "@" ? minions[i % minions.length] : s);
+    return { ...Z, qs, qi: 0, wild, wi: 0, bossTeam, done: 0 };
+  });
+}
+function zRemaining(Z) { return Z.qs.length - Z.qi; }
+function nextEncounter() {
+  const Z = S.zones[S.zi];
+  if (S.mode === "quiz") return Z.done === 0 ? { boss: false, team: [Z.wild[0]] } : { boss: true, team: Z.bossTeam };
+  if (zRemaining(Z) <= Z.reserve) return { boss: true, team: Z.bossTeam };
+  return { boss: false, team: [Z.wild[Z.wi % Z.wild.length]] };
+}
+
+/* ---------- state ---------- */
+let S = null;      // current run
+let B = null;      // current battle (or solo exam mode)
+let CH = null;     // incoming challenge {mode, seed, pct, name}
+const app = document.getElementById("app");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function mkMon(sp, lvl) { const max = 70 + lvl * 10; return { sp, lvl, hp: max, max, xp: 0 }; }
+function active() { return S.team[S.active]; }
+
+/* ---------- screens ---------- */
+function typeTag(c, dark) { return `<span class="tag${dark ? " dark" : ""}"><span class="typeicon">${TYPES[c].icon}</span> ${TYPES[c].name}</span>`; }
+function card(m, opts = {}) {
+  const sp = SP[m.sp], ko = opts.ko || m.hp <= 0;
+  return `<div class="card${opts.sel ? " sel" : ""}${opts.click ? " click" : ""}${ko ? " fainted" : ""}" ${opts.click ? `data-i="${opts.i}"` : ""} title="${esc(sp.name)}">
+    <div class="nm"><span>${esc(sp.name)}</span><span>Lv${m.lvl}</span></div>
+    ${monSVG(m.sp, opts.size || 96, ko)}
+    <div class="row" style="justify-content:space-between;gap:4px">${typeTag(sp.c)}<span class="hptxt">${ko ? "🪦" : Math.max(0, Math.round(m.hp)) + "/" + m.max}</span></div>
+    ${ko ? "" : `<div class="hp"><i style="width:${Math.max(0, m.hp / m.max * 100)}%"></i></div>`}
+    ${opts.fl ? `<div class="fl">${esc(sp.fl)}</div>` : ""}
+  </div>`;
+}
+
+function title() {
+  S = null; B = null;
+  const name = store.get("name", "");
+  const hof = store.get("runs", []);
+  const best = m => { const r = hof.filter(x => x.mode === m); return r.length ? Math.max(...r.map(x => x.pct)) + "%" : "—"; };
+  app.innerHTML = `
+  <div class="row" style="justify-content:space-between;align-items:flex-start">
+    <div><h1>COMPÉMON</h1><div class="muted">Compensation Exam 2 · Chapters 7–11 · gotta rate 'em all</div></div>
+    <div class="row">${monSVG("halowl", 80)}${monSVG("gainsheep", 80)}${monSVG("maw", 90)}</div>
+  </div>
+  ${CH ? `<div class="banner"><b>⚔ Challenge!</b> ${esc(CH.name || "A friend")} scored <b>${CH.pct}%</b> on ${CH.mode.toUpperCase()} run <b>${CH.seed}</b>. You'll get the exact same questions and enemies.
+    <div class="row" style="margin-top:8px"><button class="btn dark" id="acc">Accept challenge</button><button class="btn" id="decl">Ignore</button></div></div>` : ""}
+  <div class="box" style="margin-top:14px">
+    <div class="row"><label for="nm"><b>Trainer name</b></label><input type="text" id="nm" maxlength="16" placeholder="Your name" value="${esc(name)}" style="max-width:220px"></div>
+    <div class="grid2" style="margin-top:14px">
+      <button class="btn" id="quiz"><b style="font-size:20px">⚡ QUIZ RUN</b><br><span class="small">Multiple choice only · 3 zones · fight until one team falls · fainted Compémon are gone for good</span><br><span class="small muted">Best: ${best("quiz")}</span></button>
+      <button class="btn" id="test"><b style="font-size:20px">📝 TEST RUN</b><br><span class="small">Full mock exam · 29 multiple choice · 9 true/false · 2 short answer (one uses a chart) · graded like an exam</span><br><span class="small muted">Best: ${best("test")}</span></button>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <input type="text" id="code" placeholder="Paste a challenge code or link (e.g. T-K3P9QX-85)" style="flex:1;min-width:220px">
+      <button class="btn center" id="go">Play code</button>
+    </div>
+  </div>
+  <div class="row" style="margin-top:14px">
+    <button class="btn" id="hof">🏆 Hall of Fame (${hof.length})</button>
+    <button class="btn" id="how">❓ How to play</button>
+  </div>
+  <div id="howbox"></div>`;
+  const saveName = () => store.set("name", document.getElementById("nm").value.trim());
+  document.getElementById("quiz").onclick = () => { saveName(); chooseStarter("quiz", newSeed()); };
+  document.getElementById("test").onclick = () => { saveName(); chooseStarter("test", newSeed()); };
+  document.getElementById("go").onclick = () => { const c = parseCode(document.getElementById("code").value); if (!c) { alert("That code doesn't look right. It should look like Q-ABC123 or T-ABC123-85."); return; } saveName(); CH = c.pct != null ? c : null; chooseStarter(c.mode, c.seed); };
+  if (CH) { document.getElementById("acc").onclick = () => { saveName(); chooseStarter(CH.mode, CH.seed); }; document.getElementById("decl").onclick = () => { CH = null; history.replaceState(null, "", location.pathname + location.search); title(); }; }
+  document.getElementById("hof").onclick = hallOfFame;
+  document.getElementById("how").onclick = () => {
+    document.getElementById("howbox").innerHTML = `<div class="box" style="margin-top:14px">
+    <h3>How to play</h3>
+    <p>Pick a starter. Each zone has a wild Compémon and a boss team. Battles take turns:</p>
+    <p>⚔ <b>Your attack:</b> answer correctly to hit. Wrong = you miss.<br>🛡 <b>Foe attack:</b> answer correctly to block. Wrong = you get hit.</p>
+    <p>A battle lasts until one side has no Compémon left. <b>A Compémon that faints is gone for good.</b></p>
+    <p><b>Types = chapters.</b> If your active Compémon matches the question's chapter, it hits for <b>1.5×</b> and takes less damage. Tap a team card before answering to switch.</p>
+    <div class="typechart">${[7, 8, 9, 10, 11].map(c => `<span>${typeTag(c)} <span class="small">${TYPES[c].ch}</span></span>`).join(" ")}</div>
+    <p>Beat a wild Compémon to <b>catch it</b> or take an <b>item</b>. Beat a boss team for a badge, an item, and a team heal. Every 3 correct answers levels up your active Compémon.</p>
+    <p><b>Test run:</b> exactly 40 exam questions. If a section's questions run out, the battle ends there. If your whole team falls, you finish the exam solo — your grade still counts. <b>Short answers</b> are always attacks, graded 0–10: 9/10 hits much harder than 5/10.</p>
+    <p><b>Challenge friends:</b> copy the share text at the end. A friend who plays your code gets the same questions and enemies.</p>
+    <p class="muted small">Keys: 1–4 answer · Enter continue.</p></div>`;
+  };
+}
+
+function parseCode(s) {
+  const m = /([QT])-([A-Z0-9]{6})(?:-(\d{1,3}))?(?:-([^#&\s]+))?/i.exec(s || "");
+  if (!m) return null;
+  let name = ""; try { name = m[4] ? decodeURIComponent(m[4]) : ""; } catch (e) { name = m[4] || ""; }
+  return { mode: m[1].toUpperCase() === "Q" ? "quiz" : "test", seed: m[2].toUpperCase(), pct: m[3] != null ? +m[3] : null, name };
+}
+
+function chooseStarter(mode, seed) {
+  app.innerHTML = `<h2>Choose your starter</h2><p class="muted">${mode.toUpperCase()} run · code ${mode === "quiz" ? "Q" : "T"}-${seed}</p>
+  <div class="row">${STARTERS.map(s => `<div data-s="${s}" style="cursor:pointer">${card(mkMon(s, 3), { fl: 1, size: 130 })}</div>`).join("")}</div>
+  <p class="muted small" style="margin-top:12px">Tip: your starter is strong on its own chapter. Catch others to cover the rest — and to have backup, because fainted Compémon don't come back.</p>
+  <button class="btn" id="back">← Back</button>`;
+  app.querySelectorAll("[data-s]").forEach(el => el.onclick = () => startRun(mode, seed, el.dataset.s));
+  document.getElementById("back").onclick = title;
+}
+
+function startRun(mode, seed, starter) {
+  B = null;
+  S = { mode, seed, name: store.get("name", "") || "Trainer", zones: buildZones(mode, seed), zi: 0, team: [mkMon(starter, 3)], active: 0, fallen: [], kos: 0,
+    items: mode === "quiz" ? ["coffee", "cheat"] : ["coffee", "shield"], badges: 0, log: [], flags: { spot: 0, shield: 0 }, over: false, solo: false };
+  mapScreen();
+}
+
+function mapScreen() {
+  const Z = S.zones[S.zi], enc = nextEncounter();
+  const nodes = [];
+  for (let i = 0; i < Z.done; i++) nodes.push(`<div class="node done">●</div>`);
+  nodes.push(`<div class="node cur">${enc.boss ? "☠" : "?"}</div>`);
+  if (!enc.boss) nodes.push(`<div class="node">☠</div>`);
+  app.innerHTML = `
+  <div class="row" style="justify-content:space-between"><h2>Zone ${S.zi + 1}: ${Z.name}</h2><span class="tag">${S.mode.toUpperCase()} · ${S.mode === "quiz" ? "Q" : "T"}-${S.seed}</span></div>
+  <p class="muted">${Z.blurb}${S.mode === "test" ? ` <b>${zRemaining(Z)} exam questions left in this section.</b>` : ""}</p>
+  <div class="map">${trainerSVG(70)}<div class="link"></div>${nodes.join('<div class="link"></div>')}
+  <div class="link"></div><div class="small muted">${S.zi < 2 ? "Zone " + (S.zi + 2) + " →" : "🎓 Finish"}</div></div>
+  <div class="box"><b>Next:</b> ${enc.boss ? `BOSS TEAM — ${enc.team.map(s => esc(SP[s].name)).join(" + ")}` : `A wild Compémon is rustling in the grass…`}
+  <div class="row" style="margin-top:10px">${enc.team.map(s => `<div style="text-align:center">${monSVG(s, enc.boss ? 80 : 60)}</div>`).join("")}</div>
+  <div class="row" style="margin-top:10px"><button class="btn dark center" id="go">Battle! ⚔</button><button class="btn" id="quit">Quit run</button></div></div>
+  <h3 style="margin-top:18px">Team</h3><div class="teambar">${S.team.map((m, i) => card(m, { click: 1, i, sel: i === S.active })).join("")}</div>
+  ${S.fallen.length ? `<p class="small muted">🪦 Fallen: ${S.fallen.map(f => esc(SP[f.sp].name)).join(", ")}</p>` : ""}
+  <h3 style="margin-top:14px">Bag</h3>${bagHTML(false)}`;
+  bindTeam(mapScreen); bindBag(mapScreen);
+  document.getElementById("go").onclick = startBattle;
+  document.getElementById("quit").onclick = () => { if (confirm("Quit this run? It will not be saved.")) title(); };
+}
+
+function bagHTML(inBattle) {
+  if (!S.items.length) return `<p class="muted small">Empty.</p>`;
+  return `<div class="bag">${S.items.map((k, i) => {
+    const it = ITEMS[k]; const blocked = !S.team.length || (it.assist && (S.mode === "test" || !inBattle));
+    return `<button class="item" data-it="${i}" ${blocked ? "disabled" : ""}><span class="emo">${it.i}</span> ${it.n}<small>${it.d}</small></button>`; }).join("")}</div>`;
+}
+function bindTeam(rerender) {
+  app.querySelectorAll(".teambar .card.click").forEach(el => el.onclick = () => { S.active = +el.dataset.i; rerender(); });
+}
+function bindBag(rerender) {
+  app.querySelectorAll("[data-it]").forEach(el => el.onclick = () => { useItem(+el.dataset.it); rerender(); });
+}
+function useItem(idx) {
+  const k = S.items[idx]; const a = active(); if (!a) return;
+  if (k === "coffee") a.hp = Math.min(a.max, a.hp + 50);
+  else if (k === "pizza") S.team.forEach(m => m.hp = Math.min(m.max, m.hp + 35));
+  else if (k === "spot") S.flags.spot = 1;
+  else if (k === "shield") S.flags.shield = 1;
+  else if (k === "raise") { a.max += 15; a.hp = Math.min(a.max, a.hp + 15); }
+  else if (k === "stapler") levelUp(a);
+  else if (k === "cheat") { if (!B || B.answered || B.solo) return; const q = curQ(); if (q.kind !== "mc") return; B.elim = shuffle([0, 1, 2, 3].filter(i => i !== q.ans), Math.random).slice(0, 2); }
+  else if (k === "peer") { if (!B || B.answered || B.solo) return; const q = curQ(); if (q.kind === "sa") return; B.peer = peerVotes(q); }
+  S.items.splice(idx, 1);
+}
+function peerVotes(q) { const n = q.opts.length; const v = new Array(n).fill(0); for (let i = 0; i < 20; i++) { v[Math.random() < 0.6 ? q.ans : Math.floor(Math.random() * n)]++; } return v; }
+function levelUp(m) { m.lvl++; m.max += 10; m.hp = Math.min(m.max, m.hp + 20); }
+
+/* ---------- battle ---------- */
+function startBattle() {
+  const Z = S.zones[S.zi], enc = nextEncounter();
+  B = { Z, boss: enc.boss, foes: enc.team.map(sp => { const hp = SP[sp].boss ? BOSS_HP : WILD_HP; return { sp, hp, max: hp }; }), fi: 0,
+    turn: "atk", answered: false, elim: [], peer: null, res: null, anim: null, won: false, end: null };
+  B.msg = enc.boss ? `BOSS TEAM: ${enc.team.map(s => SP[s].name).join(" + ")}! You strike first.` : `A wild ${SP[enc.team[0]].name} appeared! You strike first.`;
+  drawQ(); battleScreen();
+}
+function foe() { return B.foes[B.fi]; }
+function curQ() { return B.q; }
+function drawQ() {
+  const Z = B.Z;
+  if (Z.qi >= Z.qs.length) Z.qi = 0; // quiz decks loop; test never reaches here with an empty zone
+  B.q = Z.qs[Z.qi++];
+  if (B.q.kind === "sa") B.turn = "atk";
+}
+function soloDraw(onlyZone) {
+  while (S.zi < S.zones.length) {
+    const Z = S.zones[S.zi];
+    if (Z.qi < Z.qs.length) { B.q = Z.qs[Z.qi++]; return true; }
+    if (onlyZone) return false;
+    S.zi++;
+  }
+  return false;
+}
+function battleScreen() {
+  const q = curQ(), a = active();
+  const counter = S.mode === "test" ? `Exam question ${S.log.length + 1}/40` : `Question ${S.log.length + 1}`;
+  let top;
+  if (B.solo) {
+    top = `<div class="box" style="text-align:center">${B.lap
+      ? `<b>🏆 Victory lap!</b> The boss team is down. Answer the rest of this section's exam questions${S.team.length ? " — correct answers still give XP" : ""}.`
+      : `${S.fallen.map(f => monSVG(f.sp, 54, true)).join("")}<br><b>Your team has fallen.</b> The exam must go on — finish the remaining questions solo. Your grade still counts.`}</div>`;
+  } else {
+    const f = foe(), fsp = SP[f.sp], match = !!a && SP[a.sp].c === q.c;
+    const dots = B.foes.map((x, i) => x.hp <= 0 ? "✕" : i === B.fi ? "●" : "○").join(" ");
+    top = `
+  <div class="arena" id="arena">
+    <div class="ground" style="right:20px;top:118px;width:150px"></div>
+    <div class="ground" style="left:20px;bottom:10px;width:150px"></div>
+    <div class="foe"><div id="foeS">${monSVG(f.sp, fsp.boss ? 150 : 125, B.won, true)}</div>
+      <div class="plate" style="text-align:left"><b>${esc(fsp.name)}</b> ${typeTag(fsp.c)}<div class="hp big"><i style="width:${Math.max(0, f.hp / f.max * 100)}%"></i></div>${B.foes.length > 1 ? `<div class="hptxt">Team ${dots}</div>` : ""}</div></div>
+    <div class="me">${a ? `<div id="meS">${monSVG(a.sp, 125)}</div>
+      <div class="plate"><b>${esc(SP[a.sp].name)}</b> Lv${a.lvl} ${typeTag(SP[a.sp].c)}<div class="hp big"><i style="width:${Math.max(0, a.hp / a.max * 100)}%"></i></div><div class="hptxt">${Math.max(0, Math.round(a.hp))}/${a.max}${S.flags.spot ? " · ⭐2×" : ""}${S.flags.shield ? " · 🛡️" : ""}</div></div>`
+      : `<div id="meS">${S.fallen.length ? monSVG(S.fallen[S.fallen.length - 1].sp, 110, true) : trainerSVG(100)}</div><div class="plate"><b>No Compémon left</b> 🪦</div>`}</div>
+  </div>
+  <div class="small" style="margin-top:8px">${esc(B.msg)}</div>`;
+    top = `<div class="row small" style="justify-content:space-between;margin-bottom:6px"><span>Zone ${S.zi + 1} · ${B.Z.name} · ${B.boss ? "BOSS TEAM" : "Wild"}</span><span>${counter}</span></div>` + top;
+    B.hint = B.turn === "atk"
+      ? (match ? "★ Type match: 1.5× damage" : `Switch to a ${TYPES[q.c].name} type for 1.5× damage`)
+      : (match ? "★ Type match: you take less damage if hit" : `Switch to a ${TYPES[q.c].name} type to resist`);
+  }
+  const turnBanner = B.solo ? `<span class="small muted">${counter}</span>`
+    : B.turn === "atk" ? `<span class="tag dark">⚔ YOUR ATTACK — answer right to hit</span>` : `<span class="tag" style="border-style:dashed">🛡 ${esc(SP[foe().sp].name).toUpperCase()} ATTACKS — answer right to block</span>`;
+  app.innerHTML = `${top}
+  <div class="box qbox">
+    <div class="row" style="justify-content:space-between">${turnBanner}${typeTag(q.c, true)}</div>
+    ${B.solo ? "" : `<div class="hint">${esc(B.hint)}</div>`}
+    <div class="q">${q.kind === "tf" ? "<b>True or false?</b> " : ""}${esc(q.q)}</div>
+    ${q.tbl ? tableHTML(q.tbl) : ""}
+    ${q.kind === "sa" ? saHTML(q) : optsHTML(q)}
+    <div id="fb">${B.res ? B.res : ""}</div>
+  </div>
+  ${S.team.length ? `<div class="teambar">${S.team.map((m, i) => card(m, { click: !B.answered && !B.solo, i, sel: i === S.active && !B.solo })).join("")}</div>` : ""}
+  ${B.solo ? "" : `<div style="margin-top:12px">${bagHTML(true)}</div>`}`;
+  if (!B.answered && !B.solo) { bindTeam(battleScreen); bindBag(battleScreen); }
+  app.querySelectorAll("[data-o]").forEach(el => el.onclick = () => answerMC(+el.dataset.o));
+  const sub = document.getElementById("saSub"); if (sub) sub.onclick = submitSA;
+  const nx = document.getElementById("next"); if (nx) { nx.onclick = nextQ; nx.focus(); }
+  if (B.anim) { playAnim(B.anim); B.anim = null; }
+}
+function tableHTML(t) { return `<table class="data">${t.map((r, i) => `<tr>${r.map(c => i === 0 ? `<th>${esc(c)}</th>` : `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</table>`; }
+function optsHTML(q) {
+  return `<div class="opts">${q.opts.map((o, i) => {
+    let cls = "btn";
+    if (B.answered) { if (i === q.ans) cls += " right"; else if (i === B.pick) cls += " wrong"; }
+    else if (B.elim.includes(i)) cls += " gone";
+    const pv = B.peer ? ` <span class="small muted">(${B.peer[i]} votes)</span>` : "";
+    return `<button class="${cls}" data-o="${i}" ${B.answered ? "disabled" : ""}><span class="k">${i + 1}.</span> ${esc(o)}${pv}</button>`; }).join("")}</div>`;
+}
+function rangeChartSVG(q) {
+  const W = 330, H = 150, x0 = 60, x1 = 300; const lo = q.min * 0.9, hi = q.max * 1.05; const X = v => x0 + (v - lo) / (hi - lo) * (x1 - x0);
+  const tick = (v, lab, y) => `<line x1="${X(v)}" y1="58" x2="${X(v)}" y2="92" stroke="#111" stroke-width="2"/><text x="${X(v)}" y="${y}" text-anchor="middle" font-size="11">${lab}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="background:#fff;border:2px solid #111;border-radius:8px;max-width:100%">
+    <text x="10" y="20" font-size="13" font-weight="bold">Pay range for the employee's grade</text>
+    <rect x="${X(q.min)}" y="64" width="${X(q.max) - X(q.min)}" height="22" fill="#fff" stroke="#111" stroke-width="2.5"/>
+    <rect x="${X(q.min)}" y="64" width="${X(q.mid) - X(q.min)}" height="22" fill="url(#hatch)" stroke="none"/>
+    <defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#bbb" stroke-width="3"/></pattern></defs>
+    ${tick(q.min, "Min " + fmt$(q.min), 108)}${tick(q.mid, "Mid " + fmt$(q.mid), 124)}${tick(q.max, "Max " + fmt$(q.max), 108)}
+    <circle cx="${X(q.salary)}" cy="75" r="7" fill="#111"/><text x="${X(q.salary)}" y="50" text-anchor="middle" font-size="12">● Employee ${fmt$(q.salary)}</text>
+    <text x="10" y="142" font-size="11" fill="#555">Range spread 50% · Compa-ratio = salary ÷ midpoint</text></svg>`;
+}
+function saHTML(q) {
+  if (q.sub === "chart") {
+    const dis = B.answered ? "disabled" : "";
+    const v = k => esc((B.saAns || {})[k] || "");
+    return `<div class="chartwrap">${rangeChartSVG(q)}<div><div class="small"><b>Merit grid (Ch 11)</b></div>${tableHTML(T_GRID11)}</div></div>
+    <div class="grid2" style="margin-top:8px">
+      <label>(a) Compa-ratio <input type="text" id="sa_a" ${dis} value="${v("a")}" placeholder="e.g. 0.95"></label>
+      <label>(b) Merit increase % <input type="text" id="sa_b" ${dis} value="${v("b")}" placeholder="e.g. 3%"></label>
+      <label>(c) New salary <input type="text" id="sa_c" ${dis} value="${v("c")}" placeholder="e.g. $61,800"></label>
+      <label>(d) Why do grids give smaller % raises to people high in the range? <input type="text" id="sa_d" ${dis} value="${v("d")}" placeholder="one sentence"></label>
+    </div>
+    ${B.answered ? "" : `<button class="btn dark center" id="saSub" style="margin-top:10px">Submit answer ✍️</button>`}`;
+  }
+  return `<textarea id="sa_t" ${B.answered ? "disabled" : ""} placeholder="Write 3–6 sentences. Use the key terms from the slides.">${esc((B.saAns || {}).t || "")}</textarea>
+  ${B.answered ? "" : `<div class="hint">Graded 0–10 by a keyword rubric. Name the concepts and define them.</div><button class="btn dark center" id="saSub" style="margin-top:10px">Submit answer ✍️</button>`}`;
+}
+function answerMC(i) {
+  if (B.answered) return; const q = curQ(); B.answered = true; B.pick = i;
+  const ok = i === q.ans;
+  resolveHit(ok ? 1 : 0, q);
+  B.res = `<div class="fb"><b>${ok ? "✔ Correct!" : "✘ Not quite."}</b> ${ok ? "" : "Answer: <b>" + esc(q.opts[q.ans]) + "</b>. "}${esc(q.e)}<div style="margin-top:10px"><button class="btn dark center" id="next">Continue ↵</button></div></div>`;
+  battleScreen();
+}
+function submitSA() {
+  const q = curQ(); let g;
+  if (q.sub === "chart") { B.saAns = { a: val("sa_a"), b: val("sa_b"), c: val("sa_c"), d: val("sa_d") }; g = gradeChart(q, B.saAns); }
+  else { B.saAns = { t: val("sa_t") }; g = gradeConcept(q, B.saAns.t); }
+  B.answered = true;
+  resolveHit(g.score / 10, q, g.score);
+  B.res = `<div class="fb"><b>Graded ${g.score}/10</b> — ${B.solo ? "" : g.score >= 9 ? "devastating hit!" : g.score >= 7 ? "solid hit!" : g.score >= 4 ? "glancing blow." : "barely a scratch."}
+    <ul class="rub">${g.items.map(it => `<li>${it.ok >= it.p && it.p ? "✔" : it.ok > 0 ? "◐" : "✘"} ${esc(it.l)} ${it.p ? `<span class="muted">(${it.ok}/${it.p})</span>` : ""}</li>`).join("")}</ul>
+    <div class="small"><b>Model answer:</b> ${esc(q.sub === "chart" ? q.e : q.model)}</div>
+    <div style="margin-top:10px"><button class="btn dark center" id="next">Continue ↵</button></div></div>`;
+  battleScreen();
+}
+function val(id) { const el = document.getElementById(id); return el ? el.value : ""; }
+
+function resolveHit(frac, q, saScore) {
+  S.log.push({ z: S.zi, kind: q.kind, c: q.c, ok: frac === 1, frac, sa: saScore, q: q.q, right: q.kind === "sa" ? q.e : q.opts[q.ans], e: q.e, pick: q.kind === "sa" ? null : q.opts[B.pick] });
+  const a = active(), msgs = [];
+  if (a && frac >= 0.5) { a.xp++; if (a.xp >= 3) { a.xp -= 3; levelUp(a); msgs.push(`${SP[a.sp].name} grew to Lv${a.lvl}!`); } }
+  if (B.solo) { B.msg = msgs.join(" "); return; }
+  const f = foe(), fname = SP[f.sp].name, aname = SP[a.sp].name;
+  if (B.turn === "atk") {
+    if (frac > 0) {
+      const typeM = SP[a.sp].c === q.c ? 1.5 : 1, lvlM = 1 + 0.06 * (a.lvl - 3), spot = S.flags.spot ? 2 : 1;
+      const dmg = HIT * frac * (q.kind === "sa" ? 2 : 1) * typeM * lvlM * spot;
+      S.flags.spot = 0;
+      f.hp = Math.max(0, f.hp - dmg);
+      msgs.unshift(`${aname} hits ${fname} for ${Math.round(dmg)}!${typeM > 1 ? " Super effective!" : ""}${spot > 1 ? " Spot Award doubled it!" : ""}`);
+      B.anim = { me: "lunge", foe: "shake", pop: "-" + Math.round(dmg), at: "foe" };
+      if (f.hp <= 0) {
+        S.kos++; msgs.push(`${fname} fainted!`);
+        B.fi++;
+        if (B.fi >= B.foes.length) { B.fi--; B.won = true; }
+        else msgs.push(`The boss team sends out ${SP[foe().sp].name}!`);
+      }
+    } else msgs.unshift(`${aname}'s attack missed!`);
+  } else {
+    if (frac === 1) { msgs.unshift(`${aname} blocked ${fname}'s attack!`); B.anim = { foe: "lungeL", pop: "BLOCK", at: "me" }; }
+    else if (S.flags.shield) { S.flags.shield = 0; msgs.unshift(`Retention Bonus blocked ${fname}'s attack!`); B.anim = { foe: "lungeL", pop: "🛡️", at: "me" }; }
+    else {
+      const resist = SP[a.sp].c === q.c ? 0.6 : 1;
+      const dmg = B.Z.dmg * (B.boss ? 1.25 : 1) * resist * (1 - frac);
+      a.hp = Math.max(0, a.hp - dmg);
+      msgs.unshift(`${fname} hits ${aname} for ${Math.round(dmg)}!${resist < 1 ? " (resisted)" : ""}`);
+      B.anim = { me: "shake", foe: "lungeL", pop: "-" + Math.round(dmg), at: "me" };
+      if (a.hp <= 0) faint(msgs);
+    }
+  }
+  B.msg = msgs.join(" ");
+}
+function faint(msgs) {
+  const a = active();
+  msgs.push(`${SP[a.sp].name} fainted and leaves your team for good. 🪦`);
+  S.fallen.push({ sp: a.sp, lvl: a.lvl });
+  S.team.splice(S.active, 1); S.active = 0;
+  if (S.team.length) msgs.push(`Go, ${SP[S.team[0].sp].name}!`);
+  else { B.wiped = true; msgs.push(S.mode === "quiz" ? "Your whole team is gone. Run over!" : "Your whole team is gone… finish the exam solo!"); }
+}
+function playAnim(an) {
+  const me = document.getElementById("meS"), fo = document.getElementById("foeS"), ar = document.getElementById("arena");
+  if (me && an.me) me.classList.add(an.me);
+  if (fo && an.foe) fo.classList.add(an.foe);
+  if (ar && an.pop) { const p = document.createElement("div"); p.className = "pop"; p.textContent = an.pop; if (an.at === "foe") { p.style.right = "70px"; p.style.top = "40px"; } else { p.style.left = "80px"; p.style.bottom = "100px"; } ar.appendChild(p); }
+}
+function nextQ() {
+  const wasSolo = B.solo;
+  B.answered = false; B.res = null; B.elim = []; B.peer = null; B.saAns = null; B.pick = null;
+  if (wasSolo) {
+    if (soloDraw(B.lap)) { B.msg = ""; return battleScreen(); }
+    if (B.lap) { B = null; S.zi++; return S.zi >= S.zones.length ? results() : mapScreen(); }
+    return results();
+  }
+  if (B.wiped) { if (S.mode === "quiz") { S.over = true; return results(); } return startSolo(); }
+  if (B.won) return reward();
+  const Z = B.Z;
+  if (S.mode === "test") {
+    if (zRemaining(Z) === 0) { B.end = B.boss ? "timeBoss" : "flee"; return reward(); }
+    if (!B.boss && zRemaining(Z) <= Z.reserve) { B.end = "flee"; return reward(); }
+  }
+  B.turn = B.turn === "atk" ? "def" : "atk";
+  drawQ();
+  B.msg = B.turn === "atk" ? "Your turn to attack!" : `${SP[foe().sp].name} is winding up an attack — block it!`;
+  battleScreen();
+}
+function startSolo() {
+  B = { solo: true, answered: false, elim: [], msg: "" };
+  if (!soloDraw(false)) return results();
+  battleScreen();
+}
+
+/* ---------- rewards ---------- */
+function itemOffers(n) {
+  const Z = S.zones[S.zi];
+  const r = rngFor(S.seed, "items-" + S.zi + "-" + Z.done);
+  const pool = Object.keys(ITEMS).filter(k => !(S.mode === "test" && ITEMS[k].assist));
+  return shuffle(pool, r).slice(0, n);
+}
+function reward() {
+  const lead = SP[B.foes[0].sp], bossSp = SP[B.foes[B.foes.length - 1].sp];
+  let html = "";
+  if (B.won && B.boss) {
+    S.badges++; S.team.forEach(m => m.hp = Math.max(m.hp, Math.round(m.max * 0.5)));
+    html = `<h2>🏅 You beat the boss team!</h2><p>${esc(bossSp.name)} and crew are down. Badge earned. Your team rests to at least half HP. Pick one item:</p>
+    <div class="bag">${itemOffers(3).map(k => `<button class="item" data-take="${k}"><span class="emo">${ITEMS[k].i}</span> ${ITEMS[k].n}<small>${ITEMS[k].d}</small></button>`).join("")}</div>`;
+  } else if (B.won) {
+    const full = S.team.length >= 4, sp = B.foes[0].sp;
+    html = `<h2>${esc(lead.name)} is knocked out!</h2>
+    <div class="row" style="align-items:flex-start">${card(mkMon(sp, B.Z.lvl), { fl: 1, size: 120 })}
+    <div style="flex:1;min-width:240px"><p><b>Choose ONE reward:</b></p>
+    ${full ? `<p class="small">Your team is full (4). Tap a teammate to swap out, or take an item.</p><div class="teambar">${S.team.map((m, i) => card(m, { click: 1, i })).join("")}</div>` : `<button class="btn dark" id="catch">Catch ${esc(lead.name)}! (joins at Lv${B.Z.lvl})</button>`}
+    <p class="small" style="margin-top:12px">…or take an item:</p>
+    <div class="bag">${itemOffers(2).map(k => `<button class="item" data-take="${k}"><span class="emo">${ITEMS[k].i}</span> ${ITEMS[k].n}<small>${ITEMS[k].d}</small></button>`).join("")}</div></div></div>`;
+  } else if (B.end === "timeBoss") {
+    html = `<h2>⏰ Time's up for this section!</h2><p>The exam questions for this zone ran out, so the boss team retreats. No badge this time.</p><button class="btn dark center" id="cont">Continue</button>`;
+  } else {
+    html = `<h2>${esc(lead.name)} ran off!</h2><p>${S.mode === "test" ? "The boss team is closing in — this section's last questions belong to them." : "Keep going!"}</p><button class="btn dark center" id="cont">Continue</button>`;
+  }
+  app.innerHTML = `<div class="box">${html}</div>`;
+  const wasBossWin = B.won && B.boss;
+  const done = () => wasBossWin && S.mode === "test" && zRemaining(S.zones[S.zi]) > 0 ? startLap() : advance();
+  app.querySelectorAll("[data-take]").forEach(el => el.onclick = () => { if (S.items.length < 8) S.items.push(el.dataset.take); done(); });
+  const c = document.getElementById("catch"); if (c) c.onclick = () => { S.team.push(mkMon(B.foes[0].sp, B.Z.lvl)); done(); };
+  app.querySelectorAll(".teambar .card.click").forEach(el => el.onclick = () => { const i = +el.dataset.i; if (!confirm(`Release ${SP[S.team[i].sp].name} for ${lead.name}?`)) return; S.team[i] = mkMon(B.foes[0].sp, B.Z.lvl); S.active = 0; done(); });
+  const ct = document.getElementById("cont"); if (ct) { ct.onclick = done; ct.focus(); }
+}
+function startLap() {
+  S.zones[S.zi].done++;
+  B = { solo: true, lap: true, answered: false, elim: [], msg: "" };
+  if (!soloDraw(true)) { B = null; S.zi++; return S.zi >= S.zones.length ? results() : mapScreen(); }
+  battleScreen();
+}
+function advance() {
+  const Z = S.zones[S.zi], wasBoss = B.boss;
+  B = null; Z.done++; if (!wasBoss) Z.wi++;
+  if (wasBoss || (S.mode === "test" && zRemaining(Z) === 0)) S.zi++;
+  if (S.zi >= S.zones.length) return results();
+  if (S.active >= S.team.length) S.active = 0;
+  mapScreen();
+}
+
+/* ---------- results + sharing ---------- */
+function computeScore() {
+  const L = S.log;
+  if (S.mode === "quiz") { const right = L.filter(x => x.ok).length; return { right, total: L.length, pct: L.length ? Math.round(right / L.length * 100) : 0, label: `${right}/${L.length} correct` }; }
+  const mc = L.filter(x => x.kind === "mc"), tf = L.filter(x => x.kind === "tf"), sa = L.filter(x => x.kind === "sa");
+  const pts = mc.filter(x => x.ok).length + tf.filter(x => x.ok).length + sa.reduce((s, x) => s + x.sa / 2, 0);
+  return { pts, pct: Math.round(pts / 48 * 100), mc: mc.filter(x => x.ok).length, tf: tf.filter(x => x.ok).length, sa: sa.map(x => x.sa), label: `${pts}/48 pts` };
+}
+function letter(p) { return p >= 90 ? "A" : p >= 80 ? "B" : p >= 70 ? "C" : p >= 60 ? "D" : "F"; }
+function shareText(sc) {
+  const code = `${S.mode === "quiz" ? "Q" : "T"}-${S.seed}-${sc.pct}-${encodeURIComponent(S.name).slice(0, 30)}`;
+  const rows = [0, 1, 2].map(z => { const L = S.log.filter(x => x.z === z); if (!L.length) return null; return `Z${z + 1} ` + L.map(x => x.kind === "sa" ? ` ✍️${x.sa}` : x.ok ? "⬛" : "⬜").join(""); }).filter(Boolean);
+  const team = S.team.length ? S.team.map(m => `${SP[m.sp].name} ${TYPES[SP[m.sp].c].icon}Lv${m.lvl}`).join(" · ") : "nobody left standing";
+  const url = (SHARE_URL || store.get("url", "") || (/^https?:/.test(location.protocol) ? location.origin + location.pathname : "")).trim();
+  return [
+    `COMPÉMON ⚔ Comp Exam 2 · ${S.mode.toUpperCase()} run`,
+    S.mode === "quiz" ? `${sc.label} (${sc.pct}%) · ${S.over ? "wiped out in Zone " + (S.zi + 1) : "cleared!"}` : `${sc.label} · ${sc.pct}% (${letter(sc.pct)})`,
+    `Badges ${"🏅".repeat(S.badges)}${"▫️".repeat(3 - S.badges)} · KOs ${S.kos}`,
+    ...rows,
+    `Team: ${team}`,
+    S.fallen.length ? `🪦 ${S.fallen.map(f => SP[f.sp].name).join(", ")}` : "",
+    `Beat me → code ${code}`,
+    url ? `${url}#c=${code}` : ""
+  ].filter(Boolean).join("\n");
+}
+function results() {
+  B = null;
+  const sc = computeScore();
+  const entry = { at: new Date().toISOString(), mode: S.mode, seed: S.seed, name: S.name, pct: sc.pct, label: sc.label, badges: S.badges, over: S.over, kos: S.kos,
+    team: S.team.map(m => ({ sp: m.sp, lvl: m.lvl })), fallen: S.fallen.slice(), items: S.items.slice() };
+  if (!S.saved) { const runs = store.get("runs", []); runs.unshift(entry); store.set("runs", runs.slice(0, 50)); S.saved = 1; }
+  const txt = shareText(sc);
+  const missed = S.log.filter(x => !x.ok && !(x.kind === "sa" && x.sa >= 9));
+  const vs = CH && CH.seed === S.seed ? `<div class="banner"><b>Challenge result:</b> you ${sc.pct > CH.pct ? "WON 🏆" : sc.pct === CH.pct ? "TIED 🤝" : "lost 💀"} — ${sc.pct}% vs ${esc(CH.name || "friend")}'s ${CH.pct}%.</div>` : "";
+  app.innerHTML = `
+  <h1>${S.over ? "Run over" : S.mode === "test" ? "Exam complete 🎓" : "Run cleared!"}</h1>
+  ${vs}
+  <div class="box">
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div><div style="font-size:42px;font-weight:bold">${sc.pct}%${S.mode === "test" ? " · " + letter(sc.pct) : ""}</div>
+      <div>${sc.label}${S.mode === "test" ? ` · MC ${sc.mc}/29 · T/F ${sc.tf}/9 · Short answers ${sc.sa.map(s => s + "/10").join(", ") || "—"}` : ""}</div>
+      <div class="small muted">Badges ${S.badges}/3 · KOs ${S.kos} · Code ${S.mode === "quiz" ? "Q" : "T"}-${S.seed}</div></div>
+      ${trainerSVG(90)}
+    </div>
+    <h3>Final team</h3>${S.team.length ? `<div class="teambar">${S.team.map(m => card(m, {})).join("")}</div>` : "<p class='muted'>Nobody left standing.</p>"}
+    ${S.fallen.length ? `<h3 style="margin-top:12px">🪦 Fallen</h3><div class="teambar">${S.fallen.map(f => card({ ...f, hp: 0, max: 1 }, { ko: 1 })).join("")}</div>` : ""}
+    <h3 style="margin-top:12px">Items left</h3>${S.items.length ? `<div class="bag">${S.items.map(k => `<span class="item"><span class="emo">${ITEMS[k].i}</span> ${ITEMS[k].n}</span>`).join("")}</div>` : "<p class='muted small'>None.</p>"}
+  </div>
+  <div class="box" style="margin-top:14px">
+    <h3>Share & challenge</h3>
+    <div class="share" id="shareTxt">${esc(txt)}</div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn dark center" id="copy">📋 Copy share text</button>
+      ${navigator.share ? `<button class="btn center" id="nshare">Share…</button>` : ""}
+      <span id="copied" class="small"></span>
+    </div>
+    ${SHARE_URL ? "" : `<details style="margin-top:10px"><summary class="small">Add your game link (so friends can tap to play)</summary>
+      <p class="small">Host this file once (for example on Netlify Drop), then paste the link here. It is saved for next time.</p>
+      <div class="row"><input type="text" id="urlIn" placeholder="https://your-site.netlify.app/" value="${esc(store.get("url", ""))}" style="flex:1;min-width:220px"><button class="btn center" id="urlSave">Save link</button></div></details>`}
+  </div>
+  <div class="box" style="margin-top:14px">
+    <h3>Study review — ${missed.length} to revisit</h3>
+    ${missed.length ? missed.map(x => `<div style="border-top:2px dashed #111;padding:8px 0">${typeTag(x.c)} <b>${esc(x.q)}</b><br>${x.kind === "sa" ? `Your score: ${x.sa}/10.` : `You picked: <i>${esc(x.pick)}</i>.`}<br><b>Answer:</b> ${esc(x.right)}<br><span class="small muted">${x.kind === "sa" ? "" : esc(x.e)}</span></div>`).join("") : "<p>Perfect run. Nothing to review!</p>"}
+  </div>
+  <div class="row" style="margin-top:14px">
+    <button class="btn center" id="again">↻ Replay same code</button>
+    <button class="btn dark center" id="home">New run</button>
+    <button class="btn center" id="hof">🏆 Hall of Fame</button>
+  </div>`;
+  document.getElementById("copy").onclick = () => copyText(document.getElementById("shareTxt").textContent);
+  const ns = document.getElementById("nshare"); if (ns) ns.onclick = () => navigator.share({ text: document.getElementById("shareTxt").textContent }).catch(() => {});
+  const us = document.getElementById("urlSave"); if (us) us.onclick = () => { store.set("url", document.getElementById("urlIn").value.trim()); results(); };
+  document.getElementById("again").onclick = () => { const m = S.mode, s = S.seed; chooseStarter(m, s); };
+  document.getElementById("home").onclick = () => { CH = null; history.replaceState(null, "", location.pathname + location.search); title(); };
+  document.getElementById("hof").onclick = hallOfFame;
+}
+function copyText(t) {
+  const ok = () => { document.getElementById("copied").textContent = "Copied! Paste it to your friends."; };
+  const fallback = () => { const ta = document.createElement("textarea"); ta.value = t; ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select(); let good = false; try { good = document.execCommand("copy"); } catch (e) {} document.body.removeChild(ta); if (good) ok(); else { const r = document.createRange(); r.selectNodeContents(document.getElementById("shareTxt")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.getElementById("copied").textContent = "Text selected — press ⌘C to copy."; } };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, fallback); else fallback();
+}
+function hallOfFame() {
+  const runs = store.get("runs", []);
+  app.innerHTML = `<h2>🏆 Hall of Fame</h2><p class="muted small">Your runs on this device (newest first). Replay any code to beat your own score.</p>
+  <div class="box hof">${runs.length ? runs.map((r, i) => `<div class="entry"><div class="row" style="justify-content:space-between">
+    <div><b>${r.pct}%</b> · ${r.mode.toUpperCase()} · ${esc(r.label)} · 🏅${r.badges}${r.kos != null ? " · KOs " + r.kos : ""}${r.over ? " · wiped" : ""}<br><span class="small muted">${new Date(r.at).toLocaleString()} · ${esc(r.name)} · code ${r.mode === "quiz" ? "Q" : "T"}-${r.seed}</span></div>
+    <button class="btn center" data-re="${i}">Replay</button></div>
+    <div class="minis">${r.team.map(m => `<div>${monSVG(m.sp, 56)}<br>${esc(SP[m.sp].name)} Lv${m.lvl}</div>`).join("")}${(r.fallen || []).map(m => `<div>${monSVG(m.sp, 46, true)}<br>🪦 ${esc(SP[m.sp].name)}</div>`).join("")}</div></div>`).join("") : "<p>No runs yet. Go catch some Compémon!</p>"}</div>
+  <div class="row" style="margin-top:12px"><button class="btn" id="back">← Back</button>${runs.length ? '<button class="btn" id="clr">Clear history</button>' : ""}</div>`;
+  app.querySelectorAll("[data-re]").forEach(el => el.onclick = () => { const r = runs[+el.dataset.re]; CH = null; chooseStarter(r.mode, r.seed); });
+  document.getElementById("back").onclick = title;
+  const c = document.getElementById("clr"); if (c) c.onclick = () => { if (confirm("Delete all saved runs?")) { store.set("runs", []); hallOfFame(); } };
+}
+
+/* ---------- keyboard ---------- */
+document.addEventListener("keydown", e => {
+  if (e.target.matches("input,textarea")) return;
+  if (e.key === "Enter" && e.target.tagName === "BUTTON") return; // the focused button handles Enter itself
+  if (/^[1-4]$/.test(e.key)) { const b = document.querySelector(`[data-o="${+e.key - 1}"]`); if (b && !b.disabled) b.click(); }
+  else if (e.key === "Enter") { const n = document.getElementById("next") || document.getElementById("cont"); if (n) n.click(); }
+});
+
+/* ---------- boot ---------- */
+function readHash() { const m = /c=([^&]+)/.exec(location.hash); CH = m ? parseCode(decodeURIComponent(m[1])) : null; if (CH && CH.pct == null) CH = null; }
+window.addEventListener("hashchange", () => { readHash(); if (!S) title(); });
+readHash();
+title();
+</script>
+</body>
+</html>
